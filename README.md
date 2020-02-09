@@ -8,5 +8,4 @@ Cordova+Android混合开发,前端采用`Vue.js`框架，组件库主要为`Elem
 * Element-Ui: https://element.eleme.cn/#/zh-CN 
 * Vant: https://youzan.github.io/vant/?source=vuejsorg#/zh-CN/ 
 <br>
-<p>数据接口来自<a href="https://tracker.gg/"></p>
-数据接口来自[Tracker Network](https://tracker.gg/) 
+<p>数据接口来自<a href="https://tracker.gg/">Tracker Network</a></p>
