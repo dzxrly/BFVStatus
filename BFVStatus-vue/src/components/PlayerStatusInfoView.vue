@@ -211,7 +211,7 @@
       </van-tab>
       <van-tab title="武器信息">
         <el-table v-loading="weaponsInfoLoading" :data="weaponsInfo" size="mini" border stripe>
-          <el-table-column type="expand" width="25px" fixed="left">
+          <el-table-column type="expand" width="40px" fixed="left">
             <template slot-scope="props">
               <el-form size="mini" label-position="left" class="weaponInfoForm">
                 <el-form-item label="击杀">
@@ -252,7 +252,7 @@
       </van-tab>
       <van-tab title="载具信息">
         <el-table :data="vehicleInfo" v-loading="vehicleInfoLoading" stripe border size="mini">
-          <el-table-column type="expand" fixed="left" width="25px">
+          <el-table-column type="expand" fixed="left" width="40px">
             <template slot-scope="props">
               <el-form size="mini" label-position="left" class="vehicleInfoForm">
                 <el-form-item label="击杀">

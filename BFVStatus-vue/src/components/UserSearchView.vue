@@ -74,7 +74,7 @@ export default {
     }
     return {
       vueLogo: require('../assets/logo.png'),
-      version: 'Ver.1.0 BETA',
+      version: 'Ver.1.1 BETA',
       showPopup: false,
       fullscreenLoading: false,
       isFailed: false,

@@ -114,8 +114,8 @@ function weaponNameConvert (name) {
       return '罗斯 MK 3'
     case 'Lee-Enfield No.4 Mk I':
       return '李-恩菲尔德 No.4 Mk I'
-    case 'Type 99':
-      return '99式步枪'
+    case 'Type 99 Arisaka':
+      return '九九式步枪'
     case 'Bren Gun':
       return '布伦轻机枪'
     case 'FG-42':
@@ -147,13 +147,13 @@ function weaponNameConvert (name) {
     case 'Liberator':
       return '解放者'
     case 'Model 27':
-      return 'Model 27 左轮手枪'
+      return 'M27 左轮手枪'
     case 'P08 Pistol':
       return 'P08 手枪'
     case 'Ruby':
       return '红宝石半自动手枪'
     case 'Type 94':
-      return '94式手枪'
+      return '九四式手枪'
     case 'Mk VI Revolver':
       return '韦伯利 Mk VI 转轮手枪'
     case 'P38 Pistol':
@@ -204,6 +204,24 @@ function weaponNameConvert (name) {
       return '消防斧'
     case 'Scout Knife M1916':
       return '侦察兵小刀 M1916'
+    case 'M2 Carbine':
+      return 'M2 卡宾枪'
+    case 'Type 2A':
+      return '二式冲锋枪'
+    case 'M3 Grease Gun':
+      return 'M3 冲锋枪'
+    case 'BAR M1918A2':
+      return 'M1918A2 勃朗宁自动步枪'
+    case 'Type 11 LMG':
+      return '十一年式轻机枪'
+    case 'Type 97 MG':
+      return '九七式车载重机枪'
+    case 'Model 37':
+      return 'Model 37 霰弹枪'
+    case 'The Unexpected Gift':
+      return '意外礼物'
+    case 'Lunge Mine':
+      return '刺雷'
     default:
       return name
   }

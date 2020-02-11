@@ -19,7 +19,7 @@
       <el-tab-pane>
           <span slot="label">{{gameWholeInfo.data.children[0].metadata.name | convertCountryName}}</span>
           <el-table :data="gameWholeInfo.data.children[0].children" size="mini" border stripe>
-            <el-table-column type="expand" width="20px" fixed="left">
+            <el-table-column type="expand" width="40px" fixed="left">
                 <template slot-scope="props">
                     <!-- <el-button type="text" @click="goToOtherPlayer">点此查看&nbsp;{{props.row.metadata.name}}&nbsp;的详细战绩</el-button> -->
                     <el-divider>游玩时长</el-divider>
@@ -216,7 +216,7 @@
       <el-tab-pane>
           <span slot="label">{{gameWholeInfo.data.children[1].metadata.name | convertCountryName}}</span>
           <el-table border :data="gameWholeInfo.data.children[1].children" size="mini" stripe>
-            <el-table-column type="expand" width="20px" fixed="left">
+            <el-table-column type="expand" width="40px" fixed="left">
                 <template slot-scope="props">
                     <el-divider>游玩时长</el-divider>
                     <el-form label-position="left" size="mini" class="timeForm">
@@ -412,7 +412,7 @@
       <el-tab-pane>
           <span slot="label">{{gameWholeInfo.data.children[2].metadata.name | convertCountryName}}</span>
           <el-table :data="gameWholeInfo.data.children[2].children" size="mini" border stripe>
-            <el-table-column type="expand" width="20px" fixed="left">
+            <el-table-column type="expand" width="40px" fixed="left">
                 <template slot-scope="props">
                     <el-divider>游玩时长</el-divider>
                     <el-form label-position="left" size="mini" class="timeForm">
