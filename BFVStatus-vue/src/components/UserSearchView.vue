@@ -14,9 +14,22 @@
                 <el-input v-model="formInfo.userName" placeholder="请输入用户名" clearable></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="submit('form')">查询</el-button>
+                <el-row>
+                  <el-col :span="10">
+                    <el-button type="primary" @click="submit('form')">查询</el-button>
+                  </el-col>
+                </el-row>
               </el-form-item>
             </el-form>
+            <el-row style="margin: 0 0 10px 0;" type="flex" justify="end">
+              <el-col :span="24" style="text-align: right;">
+                <div v-loading="versionCheckLoading">
+                  <el-tag size="mini" type="success" v-if="isLatestVer === 1">已是最新版本</el-tag>
+                  <el-tag size="mini" type="warning" v-else-if="isLatestVer === 0" @click="openDLPage">发现新版本，点击下载</el-tag>
+                  <el-tag size="mini" type="danger" v-else-if="isLatestVer === 2">版本检测失败</el-tag>
+                </div>
+              </el-col>
+            </el-row>
           </div>
         </el-col>
     </el-row>
@@ -30,7 +43,7 @@
                 战地V战绩查询助手
               </el-col>
             </el-row>
-            <el-divider>{{version}}</el-divider>
+            <el-divider>{{tagName}}</el-divider>
             <el-row type="flex" justify="left">
               <el-col :span="24">作者:</el-col>
             </el-row>
@@ -55,6 +68,7 @@
 </template>
 
 <script>
+import { httpGet } from '../js/api.js'
 export default {
   name: 'UserSearchView',
   data () {
@@ -73,8 +87,14 @@ export default {
       return callback()
     }
     return {
+      versionCheckLoading: true,
+      isLatestVer: 1,
+      tagName: 'Ver.1.2BETA',
+      githubReleaseUrl: 'https://api.github.com/repos/dzxrly/BFVStatus/releases/latest',
+      latestVerHtmlUrl: '',
+      githubAssetsUrl: '',
+      downloadUrl: '',
       vueLogo: require('../assets/logo.png'),
-      version: 'Ver.1.1 BETA',
       showPopup: false,
       fullscreenLoading: false,
       isFailed: false,
@@ -102,43 +122,64 @@ export default {
       }
     }
   },
+  created () {
+    this.getVersionInfo()
+  },
   methods: {
-    httpGet (params) {
-      var storeData = this.$store
-      var thisRouter = this.$router
+    getUserInfo () {
+      var params = {
+        url: 'https://api.tracker.gg/api/v2/bfv/standard/profile/' + this.formInfo.userPlatform + '/' + this.formInfo.userName
+      }
       var thisView = this
-      var xhr = new XMLHttpRequest()
-      if (params.data) {
-        params.url += '?' + params.data
+      var storeData = this.$store
+      var onError = function () {
+        thisView.fullscreenLoading = false
+        thisView.raiseError('查询失败', '未找到指定用户')
       }
-      xhr.open('get', params.url)
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          var res = xhr.responseText
-          // console.log(res)
-          storeData.commit('setLastPageName', 'UserSearchView')
-          storeData.commit('setData', res)
-          storeData.commit('setPlatform', thisView.formInfo.userPlatform)
-          storeData.commit('setUsername', thisView.formInfo.userName)
-          clearTimeout(timeout)
-          thisRouter.push({name: 'PlayerStatusInfoView'})
-        } else if (xhr.status === 404) {
-          thisView.fullscreenLoading = false
-          thisView.raiseError('查询失败', '未找到指定用户')
-        }
-      }
-      var timeout = setTimeout(function () {
-        xhr.abort()
+      var onTimeOut = function () {
         thisView.raiseError('查询失败', '连接超时')
         thisView.fullscreenLoading = false
-      }, 45 * 1000)
-      xhr.send()
+      }
+      var onSuccess = function (res) {
+        storeData.commit('setLastPageName', 'UserSearchView')
+        storeData.commit('setData', res)
+        storeData.commit('setPlatform', thisView.formInfo.userPlatform)
+        storeData.commit('setUsername', thisView.formInfo.userName)
+        thisView.$router.push({name: 'PlayerStatusInfoView'})
+      }
+      thisView.fullscreenLoading = true
+      httpGet(params, onSuccess, onError, onTimeOut, 45000)
+    },
+    getVersionInfo () {
+      var params = { url: this.githubReleaseUrl }
+      var thisView = this
+      this.versionCheckLoading = true
+      var onSuccess = function (res) {
+        if (thisView.tagName === JSON.parse(res).tag_name) {
+          thisView.isLatestVer = 1
+        } else {
+          thisView.isLatestVer = 0
+          thisView.githubAssetsUrl = JSON.parse(res).assets[0].url
+          thisView.latestVerHtmlUrl = JSON.parse(res).html_url
+        }
+        thisView.versionCheckLoading = false
+      }
+      var onError = function (res) {
+        thisView.isLatestVer = 2
+        thisView.raiseError('版本检测失败', '无法连接至Github')
+        thisView.versionCheckLoading = false
+      }
+      var onTimeOut = function (res) {
+        thisView.isLatestVer = 2
+        thisView.raiseError('版本检测失败', '无法连接至Github')
+        thisView.versionCheckLoading = false
+      }
+      httpGet(params, onSuccess, onError, onTimeOut, 20000)
     },
     submit (formname) {
       this.$refs[formname].validate((valid) => {
         if (valid) {
-          this.fullscreenLoading = true
-          this.httpGet({url: 'https://api.tracker.gg/api/v2/bfv/standard/profile/' + this.formInfo.userPlatform + '/' + this.formInfo.userName})
+          this.getUserInfo()
         } else {
           this.raiseError('表单填写有误', '请正确填写平台和用户名')
         }
@@ -152,7 +193,47 @@ export default {
     },
     raiseAbout () {
       this.showPopup = true
+    },
+    openDLPage () {
+      window.open(this.latestVerHtmlUrl)
     }
+    // download () {
+    //   var thisView = this
+    //   this.fullscreenLoading = true
+    //   var params = { url: this.githubAssetsUrl }
+    //   var onSuccess = function (res) {
+    //     thisView.fullscreenLoading = false
+    //     thisView.downloadUrl = JSON.parse(res).browser_download_url
+    //     if (thisView.downloadUrl !== '') {
+    //       thisView.fullscreenLoading = true
+    //       var paramsInner = { url: thisView.downloadUrl }
+    //       var onSuccessInner = function (res) {
+    //         thisView.fullscreenLoading = false
+    //       }
+    //       var onErrorInner = function () {
+    //         thisView.fullscreenLoading = false
+    //         thisView.raiseError('下载失败', '网络错误或找不到指定文件')
+    //       }
+    //       var onTimeOutInner = function () {
+    //         thisView.fullscreenLoading = false
+    //         thisView.raiseError('下载失败', '网络错误或找不到指定文件')
+    //       }
+    //       httpGet(paramsInner, onSuccessInner, onErrorInner, onTimeOutInner, 20000)
+    //     } else {
+    //       thisView.fullscreenLoading = false
+    //       thisView.raiseError('下载失败', '找不到指定文件')
+    //     }
+    //   }
+    //   var onError = function () {
+    //     thisView.fullscreenLoading = false
+    //     thisView.raiseError('下载失败', '网络错误或找不到指定文件')
+    //   }
+    //   var onTimeOut = function () {
+    //     thisView.fullscreenLoading = false
+    //     thisView.raiseError('下载失败', '网络错误或找不到指定文件')
+    //   }
+    //   httpGet(params, onSuccess, onError, onTimeOut, 20000)
+    // }
   }
 }
 </script>

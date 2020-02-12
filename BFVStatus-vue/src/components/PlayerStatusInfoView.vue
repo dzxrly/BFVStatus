@@ -287,6 +287,7 @@
 <script>
 import {timestampToTime, mapCodeToCN, modeNameToCN, weaponNameConvert, gadgetNameConvert, timeENGToCN, vehicleNameConvert} from '../js/convertPackage.js'
 import elTableInfiniteScroll from 'el-table-infinite-scroll'
+import { httpGet } from '../js/api'
 
 export default {
   name: 'PlayerStatusInfoView',
@@ -522,115 +523,118 @@ export default {
         message: msgStr
       })
     },
-    httpGetGameReports (params) {
+    getAndSetGameReports () {
+      this.gameReportsTabPaneLoading = true
+      var tempStore = this.$store
       var thisView = this
-      var xhr = new XMLHttpRequest()
-      xhr.open('get', params.url)
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          var res = xhr.responseText
-          thisView.gameReports = JSON.parse(res).data.reports
-          thisView.gameReportsToken = JSON.parse(res).data.paginationToken
-          clearTimeout(timeout)
-          thisView.gameReportsTabPaneLoading = false
-        } else if (xhr.status === 404) {
-          thisView.gameReportsTabPaneLoading = false
-          thisView.raiseError('查询失败', '未找到用户的游戏记录')
-          clearTimeout(timeout)
-        }
+      var params = {
+        url: 'https://api.tracker.gg/api/v1/bfv/gamereports/' + tempStore.getters.getPlatform + '/latest/' + tempStore.getters.getUsername
       }
-      var timeout = setTimeout(function () {
-        xhr.abort()
+      var onSuccess = function (res) {
+        thisView.gameReports = JSON.parse(res).data.reports
+        thisView.gameReportsToken = JSON.parse(res).data.paginationToken
+        thisView.gameReportsTabPaneLoading = false
+      }
+      var onError = function () {
+        thisView.gameReportsTabPaneLoading = false
+        thisView.raiseError('查询失败', '未找到用户的游戏记录')
+      }
+      var onTimeOut = function () {
         thisView.raiseError('查询失败', '连接超时')
         thisView.gameReportsTabPaneLoading = false
-      }, 45 * 1000)
-      xhr.send()
+      }
+      httpGet(params, onSuccess, onError, onTimeOut, 45000)
     },
-    httpGetNextGameReports (params) {
+    load () {
+      this.gameReportsTabPaneLoading = true
+      var tempStore = this.$store
       var thisView = this
-      var xhr = new XMLHttpRequest()
-      if (params.data) {
-        params.url += '?' + params.data
+      var params = {
+        url: 'https://api.tracker.gg/api/v1/bfv/gamereports/' + tempStore.getters.getPlatform + '/latest/' + tempStore.getters.getUsername,
+        data: 'paginationToken=' + this.gameReportsToken
       }
-      xhr.open('get', params.url)
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          var res = xhr.responseText
-          thisView.gameReports = thisView.gameReports.concat(JSON.parse(res).data.reports)
-          thisView.gameReportsToken = JSON.parse(res).data.paginationToken
-          clearTimeout(timeout)
-        }
+      var onSuccess = function (res) {
+        thisView.gameReports = thisView.gameReports.concat(JSON.parse(res).data.reports)
+        thisView.gameReportsToken = JSON.parse(res).data.paginationToken
         thisView.gameReportsTabPaneLoading = false
       }
-      var timeout = setTimeout(function () {
-        xhr.abort()
+      var onError = function () {
+        thisView.gameReportsTabPaneLoading = false
+        thisView.raiseError('查询失败', '未找到更多游戏记录')
+      }
+      var onTimeOut = function () {
         thisView.raiseError('查询失败', '连接超时')
         thisView.gameReportsTabPaneLoading = false
-      }, 45 * 1000)
-      xhr.send()
+      }
+      httpGet(params, onSuccess, onError, onTimeOut, 45000)
     },
-    httpGetGameWholeInfo (params, id) {
-      var storeData = this.$store
+    handleClick (row) {
+      this.gameReportsTabPaneLoading = true
+      var tempStore = this.$store
       var thisView = this
-      var xhr = new XMLHttpRequest()
-      // console.log('before open')
-      xhr.open('get', params.url)
-      // console.log('after open')
-      xhr.onreadystatechange = function () {
-        // console.log('onreadystate')
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          // console.log('success')
-          var res = xhr.responseText
-          thisView.gameReportsTabPaneLoading = false
-          storeData.commit('setLastPageName', 'PlayerStatusInfoView')
-          storeData.commit('setGameWholeInfo', res)
-          clearTimeout(timeout)
-          thisView.$router.push({name: 'PlayerGameInfo', params: {gameReportId: id}})
-        } else if (xhr.status === 404) {
-          thisView.gameReportsTabPaneLoading = false
-          thisView.raiseError('查询失败', '未找到用户的游戏记录')
-          clearTimeout(timeout)
-        }
+      var id = row.gameReportId
+      var params = {
+        url: 'https://api.tracker.gg/api/v1/bfv/gamereports/' + tempStore.getters.getPlatform + '/direct/' + id
       }
-      var timeout = setTimeout(function () {
-        xhr.abort()
+      var onSuccess = function (res) {
+        thisView.gameReportsTabPaneLoading = false
+        tempStore.commit('setLastPageName', 'PlayerStatusInfoView')
+        tempStore.commit('setGameWholeInfo', res)
+        thisView.$router.push({name: 'PlayerGameInfo', params: {gameReportId: id}})
+      }
+      var onError = function () {
+        thisView.gameReportsTabPaneLoading = false
+        thisView.raiseError('查询失败', '未找到用户的游戏记录')
+      }
+      var onTimeOut = function () {
         thisView.raiseError('查询失败', '连接超时')
         thisView.gameReportsTabPaneLoading = false
-      }, 45 * 1000)
-      xhr.send()
-    },
-    httpGetWeaponOrVehicleInfo (params, infoType, errorMsg) {
-      var thisView = this
-      var xhr = new XMLHttpRequest()
-      xhr.open('get', params.url)
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          var res = xhr.responseText
-          thisView.$store.commit(infoType, res)
-          clearTimeout(timeout)
-          if (infoType === 'setWeaponInfo') {
-            thisView.weaponsInfoLoading = false
-            // console.log(thisView.$store.getters.getWeaponInfo.data.children)
-            thisView.weaponsInfo = thisView.$store.getters.getWeaponInfo.data.children.sort(thisView.weaponTimeSort).reverse()
-          }
-          if (infoType === 'setVehicleInfo') {
-            thisView.vehicleInfoLoading = false
-            thisView.vehicleInfo = thisView.$store.getters.getVehicleInfo.data.children.sort(thisView.vehicleTimeSort).reverse()
-          }
-        } else if (xhr.status === 404) {
-          clearTimeout(timeout)
-          if (infoType === 'setWeaponInfo') thisView.weaponsInfoLoading = false
-          if (infoType === 'setVehicleInfo') thisView.vehicleInfoLoading = false
-          thisView.raiseError('查询失败', errorMsg)
-        }
       }
-      var timeout = setTimeout(function () {
-        xhr.abort()
+      httpGet(params, onSuccess, onError, onTimeOut, 45000)
+    },
+    getWeaponsInfo () {
+      var tempStore = this.$store
+      var thisView = this
+      var params = {
+        url: 'https://api.tracker.gg/api/v1/bfv/profile/' + tempStore.getters.getPlatform + '/' + tempStore.getters.getUsername + '/weapons'
+      }
+      this.weaponsInfoLoading = true
+      var onSuccess = function (res) {
+        thisView.$store.commit('setWeaponInfo', res)
+        thisView.weaponsInfoLoading = false
+        thisView.weaponsInfo = thisView.$store.getters.getWeaponInfo.data.children.sort(thisView.weaponTimeSort).reverse()
+      }
+      var onError = function () {
+        thisView.weaponsInfoLoading = false
+        thisView.raiseError('查询失败', '未找到用户的武器使用记录')
+      }
+      var onTimeOut = function () {
         thisView.raiseError('查询失败', '连接超时')
-        if (infoType === 'setWeaponInfo') thisView.weaponsInfoLoading = false
-        if (infoType === 'setVehicleInfo') thisView.vehicleInfoLoading = false
-      }, 45 * 1000)
-      xhr.send()
+        thisView.weaponsInfoLoading = false
+      }
+      httpGet(params, onSuccess, onError, onTimeOut, 45000)
+    },
+    getVehiclesInfo () {
+      var tempStore = this.$store
+      var thisView = this
+      this.vehicleInfoLoading = true
+      var params = {
+        url: 'https://api.tracker.gg/api/v1/bfv/profile/' + tempStore.getters.getPlatform + '/' + tempStore.getters.getUsername + '/vehicles'
+      }
+      var onSuccess = function (res) {
+        thisView.$store.commit('setVehicleInfo', res)
+        thisView.vehicleInfoLoading = false
+        thisView.vehicleInfo = thisView.$store.getters.getVehicleInfo.data.children.sort(thisView.vehicleTimeSort).reverse()
+      }
+      var onError = function () {
+        thisView.vehicleInfoLoading = false
+        thisView.raiseError('查询失败', '未找到用户的载具使用记录')
+      }
+      var onTimeOut = function () {
+        thisView.raiseError('查询失败', '连接超时')
+        thisView.vehicleInfoLoading = false
+      }
+      httpGet(params, onSuccess, onError, onTimeOut, 45000)
     },
     eltabClick (name, title) {
       console.log(name)
@@ -647,32 +651,6 @@ export default {
       } else {
         this.banRefresh = false
       }
-    },
-    getAndSetGameReports () {
-      this.gameReportsTabPaneLoading = true
-      var tempStore = this.$store
-      this.httpGetGameReports({url: 'https://api.tracker.gg/api/v1/bfv/gamereports/' + tempStore.getters.getPlatform + '/latest/' + tempStore.getters.getUsername})
-      // console.log(this.gameReportsToken)
-    },
-    load () {
-      this.gameReportsTabPaneLoading = true
-      var tempStore = this.$store
-      this.httpGetNextGameReports({url: 'https://api.tracker.gg/api/v1/bfv/gamereports/' + tempStore.getters.getPlatform + '/latest/' + tempStore.getters.getUsername, data: 'paginationToken=' + this.gameReportsToken})
-    },
-    handleClick (row) {
-      this.gameReportsTabPaneLoading = true
-      var tempStore = this.$store
-      this.httpGetGameWholeInfo({url: 'https://api.tracker.gg/api/v1/bfv/gamereports/' + tempStore.getters.getPlatform + '/direct/' + row.gameReportId}, row.gameReportId)
-    },
-    getWeaponsInfo () {
-      var tempStore = this.$store
-      this.weaponsInfoLoading = true
-      this.httpGetWeaponOrVehicleInfo({url: 'https://api.tracker.gg/api/v1/bfv/profile/' + tempStore.getters.getPlatform + '/' + tempStore.getters.getUsername + '/weapons'}, 'setWeaponInfo', '未找到用户的武器使用记录')
-    },
-    getVehiclesInfo () {
-      var tempStore = this.$store
-      this.vehicleInfoLoading = true
-      this.httpGetWeaponOrVehicleInfo({url: 'https://api.tracker.gg/api/v1/bfv/profile/' + tempStore.getters.getPlatform + '/' + tempStore.getters.getUsername + '/vehicles'}, 'setVehicleInfo', '未找到用户的载具使用记录')
     },
     weaponTimeFormatter (row, col) {
       return timeENGToCN(row.stats[2].displayValue)
