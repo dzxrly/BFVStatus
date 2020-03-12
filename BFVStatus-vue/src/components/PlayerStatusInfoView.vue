@@ -1,8 +1,13 @@
 <template>
   <div class="playerStatus-wrap">
     <el-page-header @back="goBack" content="战绩" class="pageHeader"></el-page-header>
-    <el-divider class="topDivider"></el-divider>
-    <van-pull-refresh v-model="isLoading" @refresh="onRefresh" success-text="刷新成功" :disabled="banRefresh">
+    <van-pull-refresh v-model="isLoading" @refresh="onRefresh" success-text="刷新成功" disabled>
+      <el-row type="flex" justify="center">
+        <el-col :span="24" style="text-align: center;">
+          <span style="font-size: 12px">更新于{{lastUpdateTime}}</span>
+          <van-button plain hairline type="info" size="mini" @click="onRefresh">刷新</van-button>
+        </el-col>
+      </el-row>
     <el-row class="playerStatusRow-wrap" type="flex" justify="center">
       <el-col :span="24">
         <el-row type="flex" justify="center">
@@ -304,6 +309,7 @@ export default {
       playerData: {},
       avatarSize: 64,
       avatarSrc: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
+      lastUpdateTime: '无数据',
       playerID: 'unknown player',
       playerRank: 'Lv.0',
       playerRankImg: '#',
@@ -436,6 +442,7 @@ export default {
       this.playerRankImg = this.playerData.data.segments[0].stats.rank.metadata.imageUrl
       this.playerRankPercentage = '(' + this.playerData.data.segments[0].stats.rankProgression.value.toFixed(1) + '%)'
       this.playerTime = this.convertTime(this.playerData.data.segments[0].stats.timePlayed.displayValue)
+      this.getLastUpdateTime()
       this.convertMainInfosData()
       this.convertOverviewInfo()
       this.getAndSetGameReports()
@@ -456,6 +463,10 @@ export default {
       this.playerMainInfos[1].value = this.playerData.data.segments[0].stats.killsPerMinute.displayValue
       this.playerMainInfos[2].value = this.playerData.data.segments[0].stats.wlPercentage.displayValue
       this.playerMainInfos[3].value = this.playerData.data.segments[0].stats.scorePerMinute.displayValue
+    },
+    getLastUpdateTime () {
+      var lastUpdateDate = new Date(this.playerData.data.metadata.lastUpdated.displayValue)
+      this.lastUpdateTime = lastUpdateDate.toLocaleString()
     },
     getClassData (id, type) {
       var tempClassInfos = this.playerData.data.segments
@@ -694,7 +705,7 @@ export default {
     },
     onRefresh () {
       this.updateData()
-      this.isLoading = false
+      this.$toast('数据已刷新')
     },
     getTabActive () {
       this.vanTabActive = this.$store.getters.getTabActive
@@ -742,10 +753,7 @@ export default {
   min-height 100vh
   .pageHeader {
     padding-top 5px
-  }
-
-  .topDivider {
-    margin 5px 0 10px 0
+    margin-bottom 10px
   }
   .playerStatusRow-wrap {
     margin-top 20px

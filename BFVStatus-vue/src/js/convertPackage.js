@@ -7,7 +7,7 @@ function timestampToTime (timestamp) {
   var m = date.getMinutes()
   return Y + M + D + h + m
 } // 时间戳转换函数
-function mapCodeToCN (mapKey) {
+function mapCodeToCN (mapKey) { // 地图名称转换
   switch (mapKey) {
     case 'MP_Jungle':
       return '所罗门群岛'
@@ -28,7 +28,7 @@ function mapCodeToCN (mapKey) {
     case 'MP_GOps_Chapter2_Arras':
       return '阿拉斯(大行动)'
     case 'MP_Devastation':
-      return '毁灭'
+      return '荒废之地'
     case 'MP_IwoJima':
       return '硫磺岛'
     case 'MP_Arras':
@@ -50,12 +50,28 @@ function mapCodeToCN (mapKey) {
     case 'MP_WE_Grind_Escaut':
       return '扭曲钢铁(鏖战)'
     case 'MP_WE_Grind_Devastation':
-      return '毁灭(鏖战)'
+      return '荒废之地(鏖战)'
+    case 'MP_Norway':
+      return '罗弗敦群岛'
+    case 'MP_Provence':
+      return '普罗旺斯'
+    case 'MP_WE_CQS_ArcticFjord':
+      return '纳尔维克'
+    case 'MP_WE_CQS_Devastation':
+      return '荒废之地'
+    case 'MP_WE_CQS_Halfaya':
+      return '岩漠'
+    case 'MP_WE_CQS_Rotterdam':
+      return '鹿特丹'
+    case 'MP_WE_CQS_Arras':
+      return '阿拉斯'
+    case 'MP_WE_CQS_ActicFjell':
+      return '菲耶尔652'
     default:
       return mapKey
   }
-} // 地图名称转换函数
-function modeNameToCN (modeKey) {
+}
+function modeNameToCN (modeKey) { // 游戏模式名称转换
   switch (modeKey) {
     case 'Breakthrough0':
       return '突破'
@@ -73,6 +89,12 @@ function modeNameToCN (modeKey) {
       return '最终一战'
     case 'FrontlinesMedium0':
       return '前线(中型)'
+    case 'SquadConquest0':
+      return '小队征服'
+    case 'Outpost0':
+      return '前哨'
+    case 'Rush0':
+      return '突袭'
     default:
       return modeKey
   }

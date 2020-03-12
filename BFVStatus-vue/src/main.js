@@ -15,6 +15,10 @@ import 'vant/lib/pull-refresh/style'
 import { Swipe, SwipeItem } from 'vant'
 import Popup from 'vant/lib/popup'
 import 'vant/lib/popup/style'
+import Button from 'vant/lib/button'
+import 'vant/lib/button/style'
+import Toast from 'vant/lib/toast'
+import 'vant/lib/toast/style'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
@@ -24,6 +28,8 @@ Vue.use(PullRefresh)
 Vue.use(Swipe)
 Vue.use(SwipeItem)
 Vue.use(Popup)
+Vue.use(Button)
+Vue.use(Toast)
 
 /* eslint-disable no-new */
 new Vue({

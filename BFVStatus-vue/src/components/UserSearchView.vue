@@ -89,7 +89,7 @@ export default {
     return {
       versionCheckLoading: true,
       isLatestVer: 1,
-      tagName: 'Ver.1.2BETA',
+      tagName: 'Ver.1.2.1',
       githubReleaseUrl: 'https://api.github.com/repos/dzxrly/BFVStatus/releases/latest',
       latestVerHtmlUrl: '',
       githubAssetsUrl: '',
