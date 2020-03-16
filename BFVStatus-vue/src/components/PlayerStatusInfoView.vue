@@ -35,6 +35,11 @@
         </el-row>
       </el-col>
     </el-row>
+    <el-row type="flex" class="chartsLinkBtn-wrap" justify="center">
+      <el-col :span="24" class="chartsLinkBtn">
+        <van-button type="primary" plain hairline size="small" @click="goToChartsView">查看近期战绩统计图</van-button>
+      </el-col>
+    </el-row>
     <el-row class="mainInfoRow">
       <el-col :span="24">
         <el-carousel height="80px" arrow="always" :interval="3000">
@@ -210,6 +215,11 @@
           <el-table-column label="时间" width="180px">
             <template slot-scope="scope">
               <span>{{scope.row.timestamp | convertTimestamp}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="服务器名称" width="250px">
+            <template slot-scope="scope">
+              <span>{{scope.row.serverName}}</span>
             </template>
           </el-table-column>
         </el-table>
@@ -589,7 +599,6 @@ export default {
       }
       var onSuccess = function (res) {
         thisView.gameReportsTabPaneLoading = false
-        tempStore.commit('setLastPageName', 'PlayerStatusInfoView')
         tempStore.commit('setGameWholeInfo', res)
         thisView.$router.push({name: 'PlayerGameInfo', params: {gameReportId: id}})
       }
@@ -713,6 +722,9 @@ export default {
     },
     setTabActive (index) {
       this.$store.commit('setTabActive', index)
+    },
+    goToChartsView () {
+      this.$router.push({name: 'ChartsView'})
     }
   },
   filters: {
@@ -757,7 +769,7 @@ export default {
   }
   .playerStatusRow-wrap {
     margin-top 20px
-    margin-bottom 20px
+    margin-bottom 5px
 
     .playerMainInfoCol {
       .plaayername {
@@ -773,6 +785,10 @@ export default {
         font-size 14px
       }
     }
+  }
+  .chartsLinkBtn-wrap {
+    text-align center
+    margin 2px 0px 5px 0px
   }
   .mainInfoRow {
     .el-carousel {

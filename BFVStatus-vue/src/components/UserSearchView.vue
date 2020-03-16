@@ -26,7 +26,7 @@
                 <div v-loading="versionCheckLoading">
                   <el-tag size="mini" type="success" v-if="isLatestVer === 1">已是最新版本</el-tag>
                   <el-tag size="mini" type="warning" v-else-if="isLatestVer === 0" @click="openDLPage">发现新版本，点击下载</el-tag>
-                  <el-tag size="mini" type="danger" v-else-if="isLatestVer === 2">版本检测失败</el-tag>
+                  <el-tag size="mini" type="danger" v-else-if="isLatestVer === 2" @click="reCheck">版本检测失败，点击重新检测</el-tag>
                 </div>
               </el-col>
             </el-row>
@@ -41,6 +41,11 @@
             <el-row type="flex" justify="center">
               <el-col style="text-align: center" :span="24">
                 战地V战绩查询助手
+              </el-col>
+            </el-row>
+            <el-row type="flex" justify="center">
+              <el-col style="text-align: center" :span="24">
+                <el-button type="info" round size="mini" plain @click="goToGithub"><img src="../assets/social_github.svg">&nbsp;Github</el-button>
               </el-col>
             </el-row>
             <el-divider>{{tagName}}</el-divider>
@@ -89,8 +94,9 @@ export default {
     return {
       versionCheckLoading: true,
       isLatestVer: 1,
-      tagName: 'Ver.1.2.1',
+      tagName: 'Ver.1.3.0',
       githubReleaseUrl: 'https://api.github.com/repos/dzxrly/BFVStatus/releases/latest',
+      githubLink: 'https://github.com/dzxrly/BFVStatus',
       latestVerHtmlUrl: '',
       githubAssetsUrl: '',
       downloadUrl: '',
@@ -174,7 +180,10 @@ export default {
         thisView.raiseError('版本检测失败', '无法连接至Github')
         thisView.versionCheckLoading = false
       }
-      httpGet(params, onSuccess, onError, onTimeOut, 20000)
+      httpGet(params, onSuccess, onError, onTimeOut, 45000)
+    },
+    reCheck () {
+      this.getVersionInfo()
     },
     submit (formname) {
       this.$refs[formname].validate((valid) => {
@@ -196,6 +205,9 @@ export default {
     },
     openDLPage () {
       window.open(this.latestVerHtmlUrl)
+    },
+    goToGithub () {
+      window.open(this.githubLink)
     }
     // download () {
     //   var thisView = this

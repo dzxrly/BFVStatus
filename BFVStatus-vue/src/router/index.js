@@ -4,6 +4,7 @@ import HelloWorld from '@/components/HelloWorld'
 import UserSearchView from '@/components/UserSearchView'
 import PlayerStatusInfoView from '@/components/PlayerStatusInfoView'
 import PlayerGameInfo from '@/components/PlayerGameInfo'
+import ChartsView from '@/components/ChartsView'
 
 Vue.use(Router)
 
@@ -29,6 +30,11 @@ export default new Router({
       name: 'PlayerGameInfo',
       component: PlayerGameInfo,
       params: true
+    },
+    {
+      path: '/ChartsView',
+      name: 'ChartsView',
+      component: ChartsView
     }
   ]
 })

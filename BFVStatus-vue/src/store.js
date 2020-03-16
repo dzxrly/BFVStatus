@@ -11,7 +11,8 @@ export default new Vuex.Store({
     gameWholeInfo: null,
     weaponInfo: null,
     vehicleInfo: null,
-    tabActive: 0
+    tabActive: 0,
+    history: null
   },
   getters: {
     getJSONData (state) {
@@ -53,6 +54,10 @@ export default new Vuex.Store({
       if (state.tabActive) {
         return state.tabActive
       } else return 0
+    },
+    getHistory (state) {
+      if (state.history) return JSON.parse(state.history)
+      else return null
     }
   },
   mutations: {
@@ -79,6 +84,9 @@ export default new Vuex.Store({
     },
     setTabActive (state, tabActive) {
       state.tabActive = tabActive
+    },
+    setHistory (state, history) {
+      state.history = history
     }
   }
 })

@@ -1,7 +1,6 @@
 <template>
   <div class="playerGameInfo-wrap">
     <el-page-header @back="goBack" content="本局游戏详情" class="pageHeader"></el-page-header>
-    <el-divider class="topDivider"></el-divider>
     <el-row class="serverInfo-name" type="flex" justify="center">
         <el-col :span="24">{{gameWholeInfo.data.metadata.serverName}}</el-col>
     </el-row>
@@ -628,7 +627,7 @@ export default {
       this.gameWholeInfo = this.$store.getters.getGameWholeInfo
     },
     goBack () {
-      this.$router.push({name: this.$store.getters.getLastPageName})
+      this.$router.push({name: 'PlayerStatusInfoView'})
     },
     getPlayerCount () {
       for (var i = 0; i < this.gameWholeInfo.data.children.length; i++) {
