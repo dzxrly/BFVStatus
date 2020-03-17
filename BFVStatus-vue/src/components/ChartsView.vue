@@ -1,22 +1,51 @@
 <template>
   <div class="chartsView-wrap">
-    <el-page-header content="游戏数据统计表" class="pageHeader" @back="goBack"></el-page-header>
-    <el-row class="playerIdRow" type="flex" justify="center">
-      <el-col :span="24" class="playerIdCol">{{playerId}}</el-col>
-    </el-row>
+    <el-page-header class="pageHeader" @back="goBack">
+      <template slot="content">{{playerId}}的数据统计</template>
+    </el-page-header>
     <el-row class="updateTimeRow" type="flex" justify="center">
-      <el-col :span="24" class="updateTimeCol">
-        <el-tag size="mini">更新于{{lastUpdateTime}}</el-tag>
+      <el-col :span="16" class="updateTimeCol">
+        <el-tag size="mini" type="warning">更新于{{lastUpdateTime}}</el-tag>
       </el-col>
     </el-row>
     <van-tabs v-model="activeTab" v-loading="historyLoading" class="vanTabs">
       <van-tab title="K/D折线图" class="vanTab">
+        <el-row type="flex" justify="center">
+          <el-col :span="20">
+            <el-slider v-model="selectedKdDays" show-input input-size="mini" :min="1" :max="maxKdLen" :step="1" :show-tooltip="false"></el-slider>
+          </el-col>
+        </el-row>
+        <el-row type="flex" justify="center">
+          <el-col :span="24" style="font-size: 10px; text-align: center">
+            <el-tag type="info" size="mini" style="margin-top: 5px;">近{{selectedKdDays}}天数据</el-tag>
+          </el-col>
+        </el-row>
         <div id="kdLineChartDiv" style="width: 100vw;height: 70vh"></div>
       </van-tab>
       <van-tab title="击杀数折线图" class="vanTab">
+        <el-row type="flex" justify="center">
+          <el-col :span="20">
+            <el-slider v-model="selectedKillsDays" show-input input-size="mini" :min="1" :max="maxKillsLen" :step="1" :show-tooltip="false"></el-slider>
+          </el-col>
+        </el-row>
+        <el-row type="flex" justify="center">
+          <el-col :span="24" style="font-size: 10px; text-align: center">
+            <el-tag type="info" size="mini" style="margin-top: 5px;">近{{selectedKillsDays}}天数据</el-tag>
+          </el-col>
+        </el-row>
         <div id="killsLineChartDiv" style="width: 100vw;height: 70vh"></div>
       </van-tab>
       <van-tab title="SPM折线图" class="vanTab">
+        <el-row type="flex" justify="center">
+          <el-col :span="20">
+            <el-slider v-model="selectedSpmDays" show-input input-size="mini" :min="1" :max="maxSpmLen" :step="1" :show-tooltip="false"></el-slider>
+          </el-col>
+        </el-row>
+        <el-row type="flex" justify="center">
+          <el-col :span="24" style="font-size: 10px; text-align: center">
+            <el-tag type="info" size="mini" style="margin-top: 5px;">近{{selectedSpmDays}}天数据</el-tag>
+          </el-col>
+        </el-row>
         <div id="spmLineChartDiv" style="width: 100vw;height: 70vh"></div>
       </van-tab>
     </van-tabs>
@@ -32,11 +61,18 @@ export default {
   name: 'ChartsView',
   data () {
     return {
+      isInit: false,
       playerHistory: {},
       historyLoading: true,
       playerId: 'null',
       lastUpdateTime: '无数据',
       activeTab: 0,
+      maxKdLen: 30,
+      selectedKdDays: 30,
+      selectedKillsDays: 30,
+      maxKillsLen: 30,
+      selectedSpmDays: 30,
+      maxSpmLen: 30,
       kdLineOption: {
         itemStyle: {
           color: '#409EFF'
@@ -177,7 +213,10 @@ export default {
             }
           }
         ]
-      }
+      },
+      kdLineChart: null,
+      killsLineChart: null,
+      spmLineChart: null
     }
   },
   created () {
@@ -217,6 +256,8 @@ export default {
       var onSuccess = function (res) {
         thisView.playerHistory = JSON.parse(res)
         thisView.$store.commit('setHistory', res)
+        thisView.setMaxLen()
+        thisView.setInitSelectedValue()
         thisView.kdDataInit()
         thisView.killsDataInit()
         thisView.spmDataInit()
@@ -233,24 +274,38 @@ export default {
       }
       httpGet(params, onSuccess, onError, onTimeout, 45000)
     },
+    setInitSelectedValue () {
+      this.selectedKdDays = this.maxKdLen
+      this.selectedKillsDays = this.maxKillsLen
+      this.selectedSpmDays = this.maxSpmLen
+      this.isInit = true
+    },
+    setMaxLen () {
+      this.maxKdLen = this.playerHistory.data.series.KdRatio.data.length
+      this.maxKillsLen = this.playerHistory.data.series.Kills.data.length
+      this.maxSpmLen = this.playerHistory.data.series.ScorePerMinute.data.length
+    },
     kdDataInit () {
-      var kdData = this.playerHistory.data.series.KdRatio.data
+      var kdData = this.deepClone(this.playerHistory.data.series.KdRatio.data)
+      kdData.reverse()
       this.kdLineOption.dataset.source.push(['gameTime', 'kd'])
-      for (var i = 14; i < kdData.length; i++) {
+      for (var i = 0; i < this.selectedKdDays; i++) {
         this.kdLineOption.dataset.source.push([kdData[i][0], kdData[i][1].value])
       }
     },
     killsDataInit () {
-      var killsData = this.playerHistory.data.series.Kills.data
+      var killsData = this.deepClone(this.playerHistory.data.series.Kills.data)
+      killsData.reverse()
       this.killsLineOption.dataset.source.push(['gameTime', 'kills'])
-      for (var i = 14; i < killsData.length; i++) {
+      for (var i = 0; i < this.selectedKillsDays; i++) {
         this.killsLineOption.dataset.source.push([killsData[i][0], killsData[i][1].value])
       }
     },
     spmDataInit () {
-      var spmData = this.playerHistory.data.series.ScorePerMinute.data
+      var spmData = this.deepClone(this.playerHistory.data.series.ScorePerMinute.data)
+      spmData.reverse()
       this.spmLineOption.dataset.source.push(['gameTime', 'spm'])
-      for (var i = 0; i < spmData.length; i++) {
+      for (var i = 0; i < this.selectedSpmDays; i++) {
         this.spmLineOption.dataset.source.push([spmData[i][0], spmData[i][1].value])
       }
     },
@@ -260,16 +315,21 @@ export default {
       this.lastUpdateTime = lastUpdateDate.toLocaleString()
     },
     drawKDLineChart () {
-      let kdLineChart = this.$echarts.init(document.getElementById('kdLineChartDiv'), null, {renderer: 'svg'})
-      kdLineChart.setOption(this.kdLineOption)
+      this.kdLineChart = this.$echarts.init(document.getElementById('kdLineChartDiv'), null, {renderer: 'svg'})
+      this.kdLineChart.setOption(this.kdLineOption)
     },
     drawKillsLineChart () {
-      let killsLineChart = this.$echarts.init(document.getElementById('killsLineChartDiv'), null, {renderer: 'svg'})
-      killsLineChart.setOption(this.killsLineOption)
+      this.killsLineChart = this.$echarts.init(document.getElementById('killsLineChartDiv'), null, {renderer: 'svg'})
+      this.killsLineChart.setOption(this.killsLineOption)
     },
     drawSpmLineChart () {
-      let spmLineChart = this.$echarts.init(document.getElementById('spmLineChartDiv'), null, {renderer: 'svg'})
-      spmLineChart.setOption(this.spmLineOption)
+      this.spmLineChart = this.$echarts.init(document.getElementById('spmLineChartDiv'), null, {renderer: 'svg'})
+      this.spmLineChart.setOption(this.spmLineOption)
+    },
+    deepClone (originData) {
+      var _obj = JSON.stringify(originData)
+      var dataClone = JSON.parse(_obj)
+      return dataClone
     }
   },
   watch: {
@@ -291,6 +351,21 @@ export default {
           this.drawKDLineChart()
         })
       }
+    },
+    'selectedKdDays': function (newVal, oldVal) {
+      this.kdLineOption.dataset.source.length = 0
+      this.kdDataInit()
+      if (this.kdLineChart) this.kdLineChart.setOption(this.kdLineOption)
+    },
+    'selectedKillsDays': function (newVal, oldVal) {
+      this.killsLineOption.dataset.source.length = 0
+      this.killsDataInit()
+      if (this.killsLineChart) this.killsLineChart.setOption(this.killsLineOption)
+    },
+    'selectedSpmDays': function (newVal, oldVal) {
+      this.spmLineOption.dataset.source.length = 0
+      this.spmDataInit()
+      if (this.spmLineChart) this.spmLineChart.setOption(this.spmLineOption)
     }
   }
 }
@@ -306,14 +381,6 @@ export default {
       margin-bottom 10px
     }
 
-    .playerIdRow {
-        margin 20px 0px 0px 0px
-        text-align center
-        .playerIdCol {
-            font-size 24px
-            font-weight bolder
-        }
-    }
     .updateTimeRow {
         margin 10px 0px 10px 0px
         text-align center
