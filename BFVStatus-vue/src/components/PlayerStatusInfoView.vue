@@ -5,7 +5,7 @@
       <el-row type="flex" justify="center">
         <el-col :span="24" style="text-align: center;">
           <span style="font-size: 12px">更新于{{lastUpdateTime}}</span>
-          <van-button plain hairline type="info" size="mini" @click="onRefresh">刷新</van-button>
+          <el-button type="text" size="mini" @click="onRefresh">刷新</el-button>
         </el-col>
       </el-row>
     <el-row class="playerStatusRow-wrap" type="flex" justify="center">
@@ -18,7 +18,7 @@
             </el-row>
             <el-row type="flex" justify="center">
               <el-col :span="24" class="playerTime">
-                {{playerTime}}
+                游戏时长:&nbsp;{{gameTimeByHours}}小时
               </el-col>
             </el-row>
             <el-row type="flex" justify="center">
@@ -148,7 +148,7 @@
         </el-form>
       </van-tab>
       <van-tab title="兵种信息">
-          <el-table :data="playerClassInfos" style="width: 100%" class="classInfoTable">
+          <el-table :data="playerClassInfos" style="width: 100%" class="classInfoTable" border>
             <el-table-column type="expand">
               <template slot-scope="props">
                 <el-form :label-position="labelPosition" class="demo-table-expand" size="mini">
@@ -202,24 +202,26 @@
               <el-button type="text" size="mini" @click="handleClick(scope.row)">详情</el-button>
             </template>
           </el-table-column>
-          <el-table-column label="模式" width="65px">
+          <el-table-column label="服务器信息" width="200">
             <template slot-scope="scope">
-              <span>{{scope.row.modeKey | convertModeName}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="地图" width="110px">
-            <template slot-scope="scope">
-              <span>{{scope.row.mapKey | convertMapName}}</span>
+              <div>
+                <el-row type="flex" justify="center">
+                  <el-col :span="24">
+                    <el-tag type="success" size="mini">{{scope.row.modeKey | convertModeName}}</el-tag>
+                    <span style="font-weight: bold;">{{scope.row.mapKey | convertMapName}}</span>
+                  </el-col>
+                </el-row>
+                <el-row type="flex" justify="center">
+                  <el-col :span="24">
+                    <span>{{scope.row.serverName}}</span>
+                  </el-col>
+                </el-row>
+              </div>
             </template>
           </el-table-column>
           <el-table-column label="时间" width="180px">
             <template slot-scope="scope">
               <span>{{scope.row.timestamp | convertTimestamp}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="服务器名称" width="250px">
-            <template slot-scope="scope">
-              <span>{{scope.row.serverName}}</span>
             </template>
           </el-table-column>
         </el-table>
@@ -311,6 +313,7 @@ export default {
   },
   data () {
     return {
+      gameTimeByHours: 0,
       vanTabActive: 0,
       banRefresh: false,
       isLoading: false,
@@ -401,12 +404,6 @@ export default {
           value: 'rifle',
           text: '单动式步枪'
         }, {
-          value: 'sidearm',
-          text: '手枪'
-        }, {
-          value: 'gadget',
-          text: '装备'
-        }, {
           value: 'lmg',
           text: '轻机枪'
         }, {
@@ -416,8 +413,14 @@ export default {
           value: 'antimaterielrifle',
           text: '反器材步枪'
         }, {
+          value: 'sidearm',
+          text: '手枪'
+        }, {
           value: 'melee',
           text: '近战武器'
+        }, {
+          value: 'gadget',
+          text: '装备'
         }],
       weaponsInfo: [],
       weaponsInfoLoading: true,
@@ -452,6 +455,7 @@ export default {
       this.playerRankImg = this.playerData.data.segments[0].stats.rank.metadata.imageUrl
       this.playerRankPercentage = '(' + this.playerData.data.segments[0].stats.rankProgression.value.toFixed(1) + '%)'
       this.playerTime = this.convertTime(this.playerData.data.segments[0].stats.timePlayed.displayValue)
+      this.gameTimeByHours = ((this.playerData.data.segments[0].stats.timePlayed.value / 60) / 60).toFixed(0)
       this.getLastUpdateTime()
       this.convertMainInfosData()
       this.convertOverviewInfo()

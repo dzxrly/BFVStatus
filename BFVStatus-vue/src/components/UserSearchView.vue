@@ -16,7 +16,7 @@
               <el-form-item>
                 <el-row>
                   <el-col :span="10">
-                    <el-button type="primary" @click="submit('form')">查询</el-button>
+                    <el-button type="primary" @click="submit('form')" plain>查询</el-button>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -34,8 +34,8 @@
         </el-col>
     </el-row>
     <el-row class="footerRow" type="flex" justify="center">
-      <el-col :span="14">
-        <p class="word" @click="raiseAbout">Made by ViveLaCCCP</p>
+      <el-col :span="24">
+        <p class="word" @click="raiseAbout">{{tagName}}&nbsp;|&nbsp;By&nbsp;ViveLaCCCP</p>
         <van-popup v-model="showPopup" position="bottom" closeable close-icon-position='top-left'>
           <div class="inPopupRow">
             <el-row type="flex" justify="center">
@@ -48,21 +48,25 @@
                 <el-button type="info" round size="mini" plain @click="goToGithub"><img src="../assets/social_github.svg">&nbsp;Github</el-button>
               </el-col>
             </el-row>
+            <el-divider>Data Source</el-divider>
+            <el-row type="flex" justify="center" class="dataSrcText">
+              <el-col :span="24" style="text-align: center">All Data From <el-button type="text" size="mini" @click="goToTRN">TRACKER NETWORK</el-button></el-col>
+            </el-row>
             <el-divider>{{tagName}}</el-divider>
             <el-row type="flex" justify="left">
-              <el-col :span="24">作者:</el-col>
+              <el-col :span="24">作者: ViveLaCCCP</el-col>
             </el-row>
             <el-row type="flex" justify="left">
-              <el-col :span="24">Origin: ViveLaCCCP</el-col>
+              <el-col :span="24">Origin ID: ViveLaCCCP</el-col>
             </el-row>
             <el-row type="flex" justify="left">
-              <el-col :span="24">Steam: Egg_Targaryen</el-col>
+              <el-col :span="24">Steam ID: Egg_Targaryen</el-col>
             </el-row>
             <el-divider>Powered By Vue.js</el-divider>
-            <el-row type="flex" justify="left" class="vueText">
+            <el-row type="flex" justify="center" class="vueText">
               <el-col :span="24" style="text-align: center"><img :src="vueLogo" style="width: 16px;height: 16px;"></el-col>
             </el-row>
-            <el-row type="flex" justify="left" class="vueText">
+            <el-row type="flex" justify="center" class="vueText">
               <el-col :span="24" style="text-align: center">An Element &amp; Vant Front-end Program</el-col>
             </el-row>
           </div>
@@ -94,9 +98,10 @@ export default {
     return {
       versionCheckLoading: true,
       isLatestVer: 1,
-      tagName: 'Ver.1.3.2',
+      tagName: 'Ver.1.3.3',
       githubReleaseUrl: 'https://api.github.com/repos/dzxrly/BFVStatus/releases/latest',
       githubLink: 'https://github.com/dzxrly/BFVStatus',
+      trnLink: 'https://tracker.gg/',
       latestVerHtmlUrl: '',
       githubAssetsUrl: '',
       downloadUrl: '',
@@ -208,44 +213,10 @@ export default {
     },
     goToGithub () {
       window.open(this.githubLink)
+    },
+    goToTRN () {
+      window.open(this.trnLink)
     }
-    // download () {
-    //   var thisView = this
-    //   this.fullscreenLoading = true
-    //   var params = { url: this.githubAssetsUrl }
-    //   var onSuccess = function (res) {
-    //     thisView.fullscreenLoading = false
-    //     thisView.downloadUrl = JSON.parse(res).browser_download_url
-    //     if (thisView.downloadUrl !== '') {
-    //       thisView.fullscreenLoading = true
-    //       var paramsInner = { url: thisView.downloadUrl }
-    //       var onSuccessInner = function (res) {
-    //         thisView.fullscreenLoading = false
-    //       }
-    //       var onErrorInner = function () {
-    //         thisView.fullscreenLoading = false
-    //         thisView.raiseError('下载失败', '网络错误或找不到指定文件')
-    //       }
-    //       var onTimeOutInner = function () {
-    //         thisView.fullscreenLoading = false
-    //         thisView.raiseError('下载失败', '网络错误或找不到指定文件')
-    //       }
-    //       httpGet(paramsInner, onSuccessInner, onErrorInner, onTimeOutInner, 20000)
-    //     } else {
-    //       thisView.fullscreenLoading = false
-    //       thisView.raiseError('下载失败', '找不到指定文件')
-    //     }
-    //   }
-    //   var onError = function () {
-    //     thisView.fullscreenLoading = false
-    //     thisView.raiseError('下载失败', '网络错误或找不到指定文件')
-    //   }
-    //   var onTimeOut = function () {
-    //     thisView.fullscreenLoading = false
-    //     thisView.raiseError('下载失败', '网络错误或找不到指定文件')
-    //   }
-    //   httpGet(params, onSuccess, onError, onTimeOut, 20000)
-    // }
   }
 }
 </script>
@@ -275,7 +246,7 @@ export default {
   .footerRow {
     .word {
       text-align center
-      font-size 10px
+      font-size 12px
       color #ffffff
     }
     .inPopupRow {
