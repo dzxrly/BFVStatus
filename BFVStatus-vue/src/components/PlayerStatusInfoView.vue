@@ -148,7 +148,7 @@
         </el-form>
       </van-tab>
       <van-tab title="兵种信息">
-          <el-table :data="playerClassInfos" style="width: 100%" class="classInfoTable" border>
+          <el-table :data="playerClassInfos" style="width: 100%" class="classInfoTable" border stripe>
             <el-table-column type="expand">
               <template slot-scope="props">
                 <el-form :label-position="labelPosition" class="demo-table-expand" size="mini">
@@ -258,9 +258,14 @@
               </el-form>
             </template>
           </el-table-column>
-          <el-table-column label="名称" :filters="weaponTypeOptions" :filter-method="filterHandler" filter-placement="bottom-end" width="120px">
+          <el-table-column label="名称" :filters="weaponTypeOptions" :filter-method="filterHandler" filter-placement="bottom-end" width="140px">
             <template slot-scope="scope">
-              <span>{{scope.row.metadata.name | convertWeaponName | convertGadgetName}}</span>
+              <el-row>
+                <el-col :span="24"><span style="font-weight: bolder;">{{scope.row.metadata.name | convertWeaponName | convertGadgetName}}</span></el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="24"><el-tag type="warning" size="mini" plain><i class="el-icon-star-on"></i>{{scope.row.stats[0].value | killStarsConvert}}</el-tag></el-col>
+              </el-row>
             </template>
           </el-table-column>
           <el-table-column label="使用时长" prop="stats[2]" sortable :formatter="weaponTimeFormatter" :sort-method="weaponTimeSort" width="150px"></el-table-column>
@@ -287,9 +292,14 @@
               </el-form>
             </template>
           </el-table-column>
-          <el-table-column label="名称" :filters="vehicleTypeOptions" :filter-method="vehicleFilterHandler" filter-placement="bottom-end" width="120px">
+          <el-table-column label="名称" :filters="vehicleTypeOptions" :filter-method="vehicleFilterHandler" filter-placement="bottom-end" width="140px">
             <template slot-scope="scope">
-              <span>{{scope.row.metadata.name | convertVehicleName}}</span>
+              <el-row>
+                <el-col :span="24"><span style="font-weight: bolder;">{{scope.row.metadata.name | convertVehicleName}}</span></el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="24"><el-tag type="warning" size="mini" plain><i class="el-icon-star-on"></i>{{scope.row.stats[0].value | killStarsConvert}}</el-tag></el-col>
+              </el-row>
             </template>
           </el-table-column>
           <el-table-column label="使用时长" prop="stats[2]" sortable :formatter="vehicleTimeFormatter" :sort-method="vehicleTimeSort" width="150px"></el-table-column>
@@ -752,6 +762,9 @@ export default {
     },
     'convertVehicleName': function (value) {
       return vehicleNameConvert(value)
+    },
+    'killStarsConvert': function (value) {
+      return parseInt(value / 100)
     }
   },
   watch: {

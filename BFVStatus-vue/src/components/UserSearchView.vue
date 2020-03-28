@@ -3,7 +3,7 @@
       <el-row class="container-wrap" type="flex" justify="center">
         <el-col :span="18" class="formCol">
           <div class="inCol">
-            <div class="appName">战地V 战绩查询助手</div>
+            <div class="appName">战地V战绩查询助手</div>
             <el-form ref="form" :model="formInfo" :rules="rules" class="form" label-position="top" size="mini">
               <el-form-item label="平台" prop="userPlatform">
                 <el-select v-model="formInfo.userPlatform" placeholder="请选择平台" filterable clearable>
@@ -98,7 +98,7 @@ export default {
     return {
       versionCheckLoading: true,
       isLatestVer: 1,
-      tagName: 'Ver.1.3.3',
+      tagName: 'Ver.1.3.4',
       githubReleaseUrl: 'https://api.github.com/repos/dzxrly/BFVStatus/releases/latest',
       githubLink: 'https://github.com/dzxrly/BFVStatus',
       trnLink: 'https://tracker.gg/',
