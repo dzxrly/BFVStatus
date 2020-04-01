@@ -37,17 +37,17 @@
     </el-row>
     <el-row type="flex" class="chartsLinkBtn-wrap" justify="center">
       <el-col :span="24" class="chartsLinkBtn">
-        <van-button type="primary" plain hairline size="small" @click="goToChartsView">查看近期战绩统计图</van-button>
+        <van-button type="warning" plain hairline size="small" @click="goToChartsView">查看近期战绩统计图</van-button>
       </el-col>
     </el-row>
-    <el-row class="mainInfoRow">
+    <el-row type="flex" justify="center" class="hackerCheckRow">
       <el-col :span="24">
-        <el-carousel height="80px" arrow="always" :interval="3000">
-          <el-carousel-item v-for="playerMainInfo in this.playerMainInfos" :key="playerMainInfo.key">
-            <h3 class="small">{{playerMainInfo.key}}&nbsp;:&nbsp;{{playerMainInfo.value}}</h3>
-          </el-carousel-item>
-        </el-carousel>
-      </el-col>
+        <div class="hackerCheckCol">
+          <span style="color: #409EFF;" v-if="mayBeHacker === 'isChecking'"><i class="el-icon-loading"></i>正在检测是否疑似外挂...</span>
+          <span style="color: #F56C6C;" @click="showHackerCheckRes" v-if="mayBeHacker === 'isHacker'"><i class="el-icon-warning-outline"></i>疑似外挂 点击查看详情</span>
+          <span style="color: #67C23A;" @click="showHackerCheckMethod" v-if="mayBeHacker === 'isNotHacker'"><i class="el-icon-circle-check"></i>未发现外挂迹象 有疑问？</span>
+        </div>
+        </el-col>
     </el-row>
     <van-tabs @click="eltabClick" v-loading="tabLoading" stretch v-model="vanTabActive">
       <van-tab title="战绩概览">
@@ -308,6 +308,42 @@
       </van-tab>
     </van-tabs>
     </van-pull-refresh>
+    <van-popup v-model="showIsHackerPopup" position="bottom" closeable close-icon-position="top-left">
+      <div class="inIsHackerPopup">
+        <el-row class="instructionRow" type="flex" justify="center">
+          <el-col :span="24">
+            <p>结果仅供参考</p>
+            <p style="color: #F56C6C;">不能作为实锤或未开挂的证据！</p>
+          </el-col>
+        </el-row>
+        <el-divider>检测依据</el-divider>
+        <div class="isNotHackerRow">
+          <el-row>
+            <el-col :span="24">
+              <p>根据超过100击杀的武器进行计算，武器类型仅包含：<span style="font-weight: bolder">突击步枪、冲锋枪、固定式机枪、轻机枪、手枪型卡宾枪和手枪</span>。上述武器中如果存在爆头率高于50%或爆头率高于35%的武器数量超过30%将会被判定为外挂。</p>
+            </el-col>
+          </el-row>
+        </div>
+        <div class="checkRes">
+          <el-divider>检测结果</el-divider>
+          <el-row class="checkResRow" type="flex" justify="center">
+            <el-col :span="24">
+              <span>超过百杀的武器数量：<span style="color: #409EFF">{{over100KillsWeaponCount}}</span></span>
+            </el-col>
+          </el-row>
+          <el-row class="checkResRow" type="flex" justify="center">
+            <el-col :span="24">
+              <span>其中爆头率高于35%的武器数量：<span style="color: #409EFF">{{overSetHeadshotWeaponCount}}</span></span>
+            </el-col>
+          </el-row>
+          <el-row class="checkResRow" type="flex" justify="center">
+            <el-col :span="24">
+              <span>其中爆头率高于50%的武器数量：<span style="color: #409EFF">{{over50HeadshotWeaponCount}}</span></span>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 
@@ -315,6 +351,7 @@
 import {timestampToTime, mapCodeToCN, modeNameToCN, weaponNameConvert, gadgetNameConvert, timeENGToCN, vehicleNameConvert} from '../js/convertPackage.js'
 import elTableInfiniteScroll from 'el-table-infinite-scroll'
 import { httpGet } from '../js/api'
+import {checkIsHacker} from '../js/hackerCheckFunctions.js'
 
 export default {
   name: 'PlayerStatusInfoView',
@@ -323,6 +360,8 @@ export default {
   },
   data () {
     return {
+      showIsHackerPopup: false,
+      mayBeHacker: 'isChecking',
       gameTimeByHours: 0,
       vanTabActive: 0,
       banRefresh: false,
@@ -338,12 +377,6 @@ export default {
       playerRankImg: '#',
       playerRankPercentage: '(0%)',
       playerTime: '00天00小时00分钟',
-      playerMainInfos: [
-        {key: 'K/D', value: '0.0'},
-        {key: 'KPM', value: '0.0'},
-        {key: '胜率', value: '0.0'},
-        {key: 'SPM', value: '0.0'}
-      ],
       playerClassInfos: [
         {id: 0, type: '突击', imageUrl: require('../assets/assu.png'), time: '00天00小时00分钟', rank: '0', score: '0', scoreRank: '0%', spm: '0.0', spmRank: '0%', kills: '0', killsRank: '0%', kpm: '0.0', kpmRank: '0%', kd: '0', kdRank: '0%'},
         {id: 1, type: '医疗', imageUrl: require('../assets/mediv.png'), time: '00天00小时00分钟', rank: '0', score: '0', scoreRank: '0%', spm: '0.0', spmRank: '0%', kills: '0', killsRank: '0%', kpm: '0.0', kpmRank: '0%', kd: '0', kdRank: '0%'},
@@ -449,7 +482,10 @@ export default {
           value: 'transport',
           text: '运输载具'
         }
-      ]
+      ],
+      over100KillsWeaponCount: 0,
+      over50HeadshotWeaponCount: 0,
+      overSetHeadshotWeaponCount: 0
     }
   },
   created () {
@@ -467,7 +503,6 @@ export default {
       this.playerTime = this.convertTime(this.playerData.data.segments[0].stats.timePlayed.displayValue)
       this.gameTimeByHours = ((this.playerData.data.segments[0].stats.timePlayed.value / 60) / 60).toFixed(0)
       this.getLastUpdateTime()
-      this.convertMainInfosData()
       this.convertOverviewInfo()
       this.getAndSetGameReports()
       this.getWeaponsInfo()
@@ -481,12 +516,6 @@ export default {
     },
     goBack () {
       this.$router.push({name: 'UserSearchView'})
-    },
-    convertMainInfosData () {
-      this.playerMainInfos[0].value = this.playerData.data.segments[0].stats.kdRatio.displayValue
-      this.playerMainInfos[1].value = this.playerData.data.segments[0].stats.killsPerMinute.displayValue
-      this.playerMainInfos[2].value = this.playerData.data.segments[0].stats.wlPercentage.displayValue
-      this.playerMainInfos[3].value = this.playerData.data.segments[0].stats.scorePerMinute.displayValue
     },
     getLastUpdateTime () {
       var lastUpdateDate = new Date(this.playerData.data.metadata.lastUpdated.displayValue)
@@ -637,6 +666,7 @@ export default {
         thisView.$store.commit('setWeaponInfo', res)
         thisView.weaponsInfoLoading = false
         thisView.weaponsInfo = thisView.$store.getters.getWeaponInfo.data.children.sort(thisView.weaponTimeSort).reverse()
+        thisView.hackerChecker()
       }
       var onError = function () {
         thisView.weaponsInfoLoading = false
@@ -676,12 +706,6 @@ export default {
       if (name === 2) {
         this.banRefresh = true
         this.getAndSetGameReports()
-      } else if (name === 3) {
-        this.banRefresh = true
-        this.getWeaponsInfo()
-      } else if (name === 4) {
-        this.banRefresh = true
-        this.getVehiclesInfo()
       } else {
         this.banRefresh = false
       }
@@ -739,6 +763,21 @@ export default {
     },
     goToChartsView () {
       this.$router.push({name: 'ChartsView'})
+    },
+    showHackerCheckRes () {
+      this.showIsHackerPopup = true
+    },
+    showHackerCheckMethod () {
+      this.showIsHackerPopup = true
+    },
+    hackerChecker () {
+      var res1 = checkIsHacker(this.weaponsInfo, 0.3, 0.35)
+      var res2 = checkIsHacker(this.weaponsInfo, 0, 0.5)
+      this.over100KillsWeaponCount = res1[2]
+      this.overSetHeadshotWeaponCount = res1[1]
+      this.over50HeadshotWeaponCount = res2[1]
+      if (res1[0] || res2[0]) this.mayBeHacker = 'isHacker'
+      else this.mayBeHacker = 'isNotHacker'
     }
   },
   filters: {
@@ -807,6 +846,13 @@ export default {
     text-align center
     margin 2px 0px 5px 0px
   }
+  .hackerCheckRow {
+    margin 10px 0px 10px 0px
+    text-align center
+    .hackerCheckCol {
+      font-size 12px
+    }
+  }
   .mainInfoRow {
     .el-carousel {
       .el-carousel__item h3{
@@ -849,8 +895,23 @@ export default {
       margin 0 0 0 0
     }
   }
-  // .weaponTypeSelect {
-  //   margin-bottom 10px
-  // }
+  .inIsHackerPopup {
+    margin 10px 10px 10px 10px
+    .el-divier {
+      margin 2px 10px 2px 10px
+    }
+    .instructionRow {
+      text-align center
+      font-size 14px
+    }
+    .isNotHackerRow {
+      font-size 14px
+    }
+    .checkRes {
+      .checkResRow {
+        font-size 14px
+      }
+    }
+  }
 }
 </style>

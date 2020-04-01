@@ -98,7 +98,7 @@ export default {
     return {
       versionCheckLoading: true,
       isLatestVer: 1,
-      tagName: 'Ver.1.3.4',
+      tagName: 'Ver.1.3.5',
       githubReleaseUrl: 'https://api.github.com/repos/dzxrly/BFVStatus/releases/latest',
       githubLink: 'https://github.com/dzxrly/BFVStatus',
       trnLink: 'https://tracker.gg/',
