@@ -1,6 +1,10 @@
 <template>
   <div class="playerGameInfo-wrap">
+    <div class="load" v-if="gameReportsTabPaneLoading">
+      <Loading></Loading>
+    </div>
     <el-page-header @back="goBack" content="本局游戏详情" class="pageHeader"></el-page-header>
+    <div v-if="!gameReportsTabPaneLoading">
     <el-row class="serverInfo-name" type="flex" justify="center">
         <el-col :span="24">{{gameWholeInfo.data.metadata.serverName}}</el-col>
     </el-row>
@@ -213,31 +217,54 @@
           </el-table>
       </el-tab-pane>
     </el-tabs>
+    </div>
   </div>
 </template>
 
 <script>
 import {timestampToTime, mapCodeToCN, modeNameToCN, countryNameConvert, timeENGToCN, weaponNameConvert, vehicleNameConvert, gadgetNameConvert, secondsFormat} from '../js/convertPackage.js'
+import { httpGet } from '../js/api'
 export default {
   name: 'PlayerGameInfo',
   data () {
     return {
       gameWholeInfo: {},
       playerCount: 0,
-      playerId: 'null'
+      playerId: 'null',
+      gameReportsTabPaneLoading: true
     }
   },
   created () {
-    this.getGameWholeInfoData()
-    this.getPlayerCount()
-    this.getPlayerId()
+    this.popstateListener()
+  },
+  mounted () {
+    this.getGameInfo()
   },
   methods: {
+    getGameInfo () {
+      this.gameReportsTabPaneLoading = true
+      var thisView = this
+      var params = {
+        url: 'https://api.tracker.gg/api/v1/bfv/gamereports/' + thisView.$route.query.platform + '/direct/' + thisView.$route.query.id
+      }
+      var onSuccess = function (res) {
+        thisView.gameReportsTabPaneLoading = false
+        thisView.gameWholeInfo = JSON.parse(res)
+        thisView.getPlayerCount()
+        thisView.getPlayerId()
+      }
+      var onError = function () {
+        thisView.gameReportsTabPaneLoading = false
+        thisView.raiseError('查询失败', '未找到用户的游戏记录')
+      }
+      var onTimeOut = function () {
+        thisView.raiseError('查询失败', '连接超时')
+        thisView.gameReportsTabPaneLoading = false
+      }
+      httpGet(params, onSuccess, onError, onTimeOut, 45000)
+    },
     getPlayerId () {
       this.playerId = this.$store.getters.getUsername
-    },
-    getGameWholeInfoData () {
-      this.gameWholeInfo = this.$store.getters.getGameWholeInfo
     },
     goBack () {
       this.$router.push({name: 'PlayerStatusInfoView'})
@@ -255,6 +282,11 @@ export default {
         console.log('res:' + (row.metadata.name === this.playerId))
         return 'success-row'
       } else return ''
+    },
+    popstateListener () {
+      window.addEventListener('popstate', () => {
+        console.log('pop')
+      })
     }
   },
   filters: {

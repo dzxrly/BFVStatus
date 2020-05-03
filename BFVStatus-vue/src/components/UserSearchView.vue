@@ -1,5 +1,9 @@
 <template>
-    <div class="userSearch-wrap" v-loading.fullscreen.lock="fullscreenLoading">
+    <div class="userSearch-wrap" >
+      <div class="load" v-if="fullscreenLoading">
+        <Loading></Loading>
+      </div>
+      <div>
       <el-row class="container-wrap" type="flex" justify="center">
         <el-col :span="18" class="formCol">
           <div class="inCol">
@@ -11,7 +15,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="用户名" prop="userName">
-                <el-input v-model="formInfo.userName" placeholder="请输入用户名" clearable></el-input>
+                <el-autocomplete v-model="formInfo.userName" :fetch-suggestions="querySearch" placeholder="请输入用户名" clearable></el-autocomplete>
               </el-form-item>
               <el-form-item>
                 <el-row>
@@ -74,6 +78,7 @@
       </el-col>
     </el-row>
     </div>
+    </div>
 </template>
 
 <script>
@@ -98,7 +103,7 @@ export default {
     return {
       versionCheckLoading: true,
       isLatestVer: 1,
-      tagName: 'Ver.1.3.5',
+      tagName: 'Ver.1.4.0',
       githubReleaseUrl: 'https://api.github.com/repos/dzxrly/BFVStatus/releases/latest',
       githubLink: 'https://github.com/dzxrly/BFVStatus',
       trnLink: 'https://tracker.gg/',
@@ -130,13 +135,30 @@ export default {
         userName: [
           {validator: validateUserName, trigger: 'blur'}
         ]
-      }
+      },
+      playerIdHistory: []
     }
   },
   created () {
     this.getVersionInfo()
   },
+  mounted () {
+    this.getPlayerIdHistory()
+  },
   methods: {
+    getPlayerIdHistory () {
+      this.playerIdHistory = this.$store.getters.getPlayerIdHistory
+    },
+    querySearch (queryString, callback) {
+      var playerIds = this.playerIdHistory
+      var res = queryString ? playerIds.filter(this.createFilter(queryString)) : playerIds
+      callback(res)
+    },
+    createFilter (queryString) {
+      return (playerId) => {
+        return (playerId.value.indexOf(queryString) === 0)
+      }
+    },
     getUserInfo () {
       var params = {
         url: 'https://api.tracker.gg/api/v2/bfv/standard/profile/' + this.formInfo.userPlatform + '/' + this.formInfo.userName
@@ -156,6 +178,8 @@ export default {
         storeData.commit('setData', res)
         storeData.commit('setPlatform', thisView.formInfo.userPlatform)
         storeData.commit('setUsername', thisView.formInfo.userName)
+        var playerId = ('{ "value":"' + thisView.formInfo.userName + '" }').replace(new RegExp('\\"', 'gm'), '"')
+        storeData.commit('setPlayerIdHistory', playerId)
         thisView.$router.push({name: 'PlayerStatusInfoView'})
       }
       thisView.fullscreenLoading = true
@@ -223,7 +247,6 @@ export default {
 <style scoped lang="stylus">
 .userSearch-wrap {
   min-height 100vh
-
   .container-wrap {
     min-height 95vh
     .formCol {

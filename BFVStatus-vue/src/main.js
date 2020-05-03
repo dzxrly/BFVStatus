@@ -20,6 +20,7 @@ import 'vant/lib/button/style'
 import Toast from 'vant/lib/toast'
 import 'vant/lib/toast/style'
 import echarts from 'echarts'
+import Loading from './components/Loading.vue'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
@@ -32,6 +33,7 @@ Vue.use(Popup)
 Vue.use(Button)
 Vue.use(Toast)
 Vue.prototype.$echarts = echarts
+Vue.component('Loading', Loading)
 
 /* eslint-disable no-new */
 new Vue({

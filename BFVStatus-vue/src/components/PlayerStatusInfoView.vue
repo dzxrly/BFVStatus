@@ -313,14 +313,16 @@
         <el-row class="instructionRow" type="flex" justify="center">
           <el-col :span="24">
             <p>结果仅供参考</p>
-            <p style="color: #F56C6C;">不能作为实锤或未开挂的证据！</p>
+            <p style="color: #F56C6C;">不推荐作为实锤或未开挂的证据！</p>
           </el-col>
         </el-row>
         <el-divider>检测依据</el-divider>
         <div class="isNotHackerRow">
           <el-row>
             <el-col :span="24">
-              <p>根据超过100击杀的武器进行计算，武器类型仅包含：<span style="font-weight: bolder">突击步枪、冲锋枪、固定式机枪、轻机枪、手枪型卡宾枪和手枪</span>。上述武器中如果存在爆头率高于50%或爆头率高于35%的武器数量超过30%将会被判定为外挂。</p>
+              <p>根据超过100击杀的武器进行计算：1、针对武器类型为：<span style="font-weight: bolder">突击步枪、冲锋枪、固定式机枪、轻机枪、手枪型卡宾枪和手枪</span>。
+              上述武器中如果爆头率高于50%或爆头率高于35%的武器数量超过30%将会被判定为外挂。
+              2、针对武器类型为：<span style="font-weight: bolder">手动枪机卡宾枪、单动式步枪</span>。上述武器中如果爆头率高于80%且KPM高于2的武器数量超过50%将会被判定为外挂</p>
             </el-col>
           </el-row>
         </div>
@@ -328,7 +330,7 @@
           <el-divider>检测结果</el-divider>
           <el-row class="checkResRow" type="flex" justify="center">
             <el-col :span="24">
-              <span>超过百杀的武器数量：<span style="color: #409EFF">{{over100KillsWeaponCount}}</span></span>
+              <span>超过百杀的非栓狙武器数量：<span style="color: #409EFF">{{over100KillsWeaponCount}}</span></span>
             </el-col>
           </el-row>
           <el-row class="checkResRow" type="flex" justify="center">
@@ -339,6 +341,16 @@
           <el-row class="checkResRow" type="flex" justify="center">
             <el-col :span="24">
               <span>其中爆头率高于50%的武器数量：<span style="color: #409EFF">{{over50HeadshotWeaponCount}}</span></span>
+            </el-col>
+          </el-row>
+          <el-row class="checkResRow" type="flex" justify="center">
+            <el-col :span="24">
+              <span>超过百杀的栓狙武器数量：<span style="color: #409EFF">{{over100KillsSnipersCount}}</span></span>
+            </el-col>
+          </el-row>
+          <el-row class="checkResRow" type="flex" justify="center">
+            <el-col :span="24">
+              <span>其中爆头率高于80%且KPM高于2的数量：<span style="color: #409EFF">{{over80HSAnd2KpmCount}}</span></span>
             </el-col>
           </el-row>
         </div>
@@ -485,7 +497,9 @@ export default {
       ],
       over100KillsWeaponCount: 0,
       over50HeadshotWeaponCount: 0,
-      overSetHeadshotWeaponCount: 0
+      overSetHeadshotWeaponCount: 0,
+      over100KillsSnipersCount: 0,
+      over80HSAnd2KpmCount: 0
     }
   },
   created () {
@@ -633,27 +647,15 @@ export default {
       httpGet(params, onSuccess, onError, onTimeOut, 45000)
     },
     handleClick (row) {
-      this.gameReportsTabPaneLoading = true
-      var tempStore = this.$store
-      var thisView = this
+      var _this = this
       var id = row.gameReportId
-      var params = {
-        url: 'https://api.tracker.gg/api/v1/bfv/gamereports/' + tempStore.getters.getPlatform + '/direct/' + id
-      }
-      var onSuccess = function (res) {
-        thisView.gameReportsTabPaneLoading = false
-        tempStore.commit('setGameWholeInfo', res)
-        thisView.$router.push({name: 'PlayerGameInfo', params: {gameReportId: id}})
-      }
-      var onError = function () {
-        thisView.gameReportsTabPaneLoading = false
-        thisView.raiseError('查询失败', '未找到用户的游戏记录')
-      }
-      var onTimeOut = function () {
-        thisView.raiseError('查询失败', '连接超时')
-        thisView.gameReportsTabPaneLoading = false
-      }
-      httpGet(params, onSuccess, onError, onTimeOut, 45000)
+      this.$router.push({
+        path: '/PlayerGameInfo',
+        query: {
+          id: id,
+          platform: _this.$store.getters.getPlatform
+        }
+      })
     },
     getWeaponsInfo () {
       var tempStore = this.$store
@@ -771,12 +773,14 @@ export default {
       this.showIsHackerPopup = true
     },
     hackerChecker () {
-      var res1 = checkIsHacker(this.weaponsInfo, 0.3, 0.35)
-      var res2 = checkIsHacker(this.weaponsInfo, 0, 0.5)
+      var res1 = checkIsHacker(this.weaponsInfo, 0.3, 0.35, 0.5, 0.8, 2)
+      var res2 = checkIsHacker(this.weaponsInfo, 0, 0.5, 0.5, 0.8, 2)
       this.over100KillsWeaponCount = res1[2]
       this.overSetHeadshotWeaponCount = res1[1]
       this.over50HeadshotWeaponCount = res2[1]
-      if (res1[0] || res2[0]) this.mayBeHacker = 'isHacker'
+      this.over100KillsSnipersCount = res1[3]
+      this.over80HSAnd2KpmCount = res1[4]
+      if (res1[0] || res2[0] || res1[5]) this.mayBeHacker = 'isHacker'
       else this.mayBeHacker = 'isNotHacker'
     }
   },

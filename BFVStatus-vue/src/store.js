@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import createPersistedState from 'vuex-persistedstate'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -8,11 +9,11 @@ export default new Vuex.Store({
     lastPageName: '',
     platform: '',
     username: '',
-    gameWholeInfo: null,
     weaponInfo: null,
     vehicleInfo: null,
     tabActive: 0,
-    history: null
+    history: null,
+    playerIdHistory: []
   },
   getters: {
     getJSONData (state) {
@@ -35,11 +36,6 @@ export default new Vuex.Store({
         return state.username
       } else return ''
     },
-    getGameWholeInfo (state) {
-      if (state.gameWholeInfo) {
-        return JSON.parse(state.gameWholeInfo)
-      } else return null
-    },
     getWeaponInfo (state) {
       if (state.weaponInfo) {
         return JSON.parse(state.weaponInfo)
@@ -58,6 +54,10 @@ export default new Vuex.Store({
     getHistory (state) {
       if (state.history) return JSON.parse(state.history)
       else return null
+    },
+    getPlayerIdHistory (state) {
+      if (state.playerIdHistory) return state.playerIdHistory
+      else return null
     }
   },
   mutations: {
@@ -73,9 +73,6 @@ export default new Vuex.Store({
     setUsername (state, username) {
       state.username = username
     },
-    setGameWholeInfo (state, gameWholeInfo) {
-      state.gameWholeInfo = gameWholeInfo
-    },
     setWeaponInfo (state, weaponInfo) {
       state.weaponInfo = weaponInfo
     },
@@ -87,6 +84,32 @@ export default new Vuex.Store({
     },
     setHistory (state, history) {
       state.history = history
+    },
+    setPlayerIdHistory (state, playerIdHistory) {
+      let flag = false
+      for (let index in state.playerIdHistory) {
+        if (
+          state.playerIdHistory[index].value === (JSON.parse(playerIdHistory)).value
+        ) {
+          flag = true
+          break
+        }
+      }
+      if (!flag) {
+        if (state.playerIdHistory.length + 1 < 5) {
+          state.playerIdHistory.push(JSON.parse(playerIdHistory))
+        } else {
+          state.playerIdHistory.shift()
+          state.playerIdHistory.push(JSON.parse(playerIdHistory))
+        }
+      }
     }
-  }
+  },
+  plugins: [createPersistedState({
+    reducer (val) {
+      return {
+        playerIdHistory: val.playerIdHistory
+      }
+    }
+  })]
 })

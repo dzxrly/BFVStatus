@@ -20,10 +20,9 @@ export default new Router({
       component: PlayerStatusInfoView
     },
     {
-      path: '/PlayerGameInfo/:gameReportId',
+      path: '/PlayerGameInfo',
       name: 'PlayerGameInfo',
-      component: PlayerGameInfo,
-      params: true
+      component: PlayerGameInfo
     },
     {
       path: '/ChartsView',
