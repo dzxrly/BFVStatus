@@ -8,6 +8,7 @@
         <el-col :span="18" class="formCol">
           <div class="inCol">
             <div class="appName">战地V战绩查询助手</div>
+            <el-alert type="warning" title="当前版本为测试版" :closable="false" show-icon v-if="isTestVer"></el-alert>
             <el-form ref="form" :model="formInfo" :rules="rules" class="form" label-position="top" size="mini">
               <el-form-item label="平台" prop="userPlatform">
                 <el-select v-model="formInfo.userPlatform" placeholder="请选择平台" filterable clearable>
@@ -103,7 +104,8 @@ export default {
     return {
       versionCheckLoading: true,
       isLatestVer: 1,
-      tagName: 'Ver.1.4.0',
+      tagName: 'Ver.1.4.1-alpha',
+      isTestVer: false,
       githubReleaseUrl: 'https://api.github.com/repos/dzxrly/BFVStatus/releases/latest',
       githubLink: 'https://github.com/dzxrly/BFVStatus',
       trnLink: 'https://tracker.gg/',
@@ -144,8 +146,14 @@ export default {
   },
   mounted () {
     this.getPlayerIdHistory()
+    this.checkIsTestVersion()
   },
   methods: {
+    checkIsTestVersion () {
+      if (this.tagName.indexOf('alpha') !== -1 || this.tagName.indexOf('beta') !== -1) {
+        this.isTestVer = true
+      } else this.isTestVer = false
+    },
     getPlayerIdHistory () {
       this.playerIdHistory = this.$store.getters.getPlayerIdHistory
     },

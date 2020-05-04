@@ -6,12 +6,13 @@
     <el-page-header class="pageHeader" @back="goBack">
       <template slot="content">{{playerId}}的数据统计</template>
     </el-page-header>
+    <el-alert type="error" title="官方数据接口出错，请晚些时候重试" :closable="false" v-if="!isGetDataSuccessfully" show-icon></el-alert>
     <el-row class="updateTimeRow" type="flex" justify="center">
       <el-col :span="16" class="updateTimeCol">
         <el-tag size="mini" type="warning">更新于{{lastUpdateTime}}</el-tag>
       </el-col>
     </el-row>
-    <van-tabs v-model="activeTab" class="vanTabs">
+    <van-tabs v-model="activeTab" class="vanTabs" v-if="isGetDataSuccessfully">
       <van-tab title="K/D折线图" class="vanTab">
         <el-row type="flex" justify="center">
           <el-col :span="20">
@@ -76,6 +77,7 @@ export default {
       maxKillsLen: 30,
       selectedSpmDays: 30,
       maxSpmLen: 30,
+      isGetDataSuccessfully: true,
       kdLineOption: {
         itemStyle: {
           color: '#409EFF'
@@ -260,12 +262,18 @@ export default {
         thisView.playerHistory = JSON.parse(res)
         thisView.$store.commit('setHistory', res)
         thisView.historyLoading = false
-        thisView.setMaxLen()
-        thisView.setInitSelectedValue()
-        thisView.kdDataInit()
-        thisView.killsDataInit()
-        thisView.spmDataInit()
-        thisView.drawKDLineChart()
+        if (JSON.stringify(thisView.playerHistory.data.series) !== '{}') {
+          thisView.isGetDataSuccessfully = true
+          thisView.setMaxLen()
+          thisView.setInitSelectedValue()
+          thisView.kdDataInit()
+          thisView.killsDataInit()
+          thisView.spmDataInit()
+          thisView.drawKDLineChart()
+        } else {
+          thisView.isGetDataSuccessfully = false
+          console.log('error')
+        }
       }
       var onError = function (res) {
         thisView.historyLoading = false

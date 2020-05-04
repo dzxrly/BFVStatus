@@ -1,6 +1,9 @@
 <template>
     <div class="load-ani">
         <svg height="91" width="65">
+            <!-- <polyline class="load-logoBG" fill="none" :stroke="logoColorBG" stroke-width="2"
+            points="1,1 21,1 33,44 44,1 64,1 33,90 1,1"
+            stroke-linecap="round" stroke-linejoin="round"></polyline> -->
             <polyline class="load-logo" fill="none" :stroke="logoColor" stroke-width="2"
             points="1,1 21,1 33,44 44,1 64,1 33,90 1,1"
             stroke-linecap="round" stroke-linejoin="round"></polyline>
@@ -14,7 +17,8 @@ export default {
   name: 'Loading',
   data () {
     return {
-      logoColor: '#409EFF'
+      logoColor: '#409EFF',
+      logoColorBG: '#909399'
     }
   }
 }
@@ -36,21 +40,31 @@ export default {
         font-family Helvetica
         font-size 14px
         margin-top 10px
-        color #409EFF
+        animation load-text 2s infinite alternate
+        -webkit-animation load-text 2s infinite alternate
     }
     .load-logo {
-        animation load-logo 2s infinite
-        --webkit-animation load-logo 2s infinite
-        stroke-dasharray 500
-        stroke-dashoffset 500
+        animation load-logo 2s infinite alternate
+        -webkit-animation load-logo 2s infinite alternate
+        stroke-dasharray 325
+        stroke-dashoffset 325
     }
 
     @keyframes load-logo {
         from {
-            stroke-dashoffset 500
+            stroke-dashoffset 325
         }
         to {
             stroke-dashoffset 0
+        }
+    }
+
+    @keyframes load-text {
+        from {
+            color rgba(64, 158, 255, 0.2)
+        }
+        to {
+            color rgba(64, 158, 255, 1)
         }
     }
 }
