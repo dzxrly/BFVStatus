@@ -6,7 +6,13 @@
     <el-page-header class="pageHeader" @back="goBack">
       <template slot="content">{{playerId}}的数据统计</template>
     </el-page-header>
-    <el-alert type="error" title="官方数据接口出错，请晚些时候重试" :closable="false" v-if="!isGetDataSuccessfully" show-icon></el-alert>
+    <el-alert
+      type="error"
+      title="官方数据接口出错，请晚些时候重试"
+      :closable="false"
+      v-if="!isGetDataSuccessfully"
+      show-icon
+    ></el-alert>
     <el-row class="updateTimeRow" type="flex" justify="center">
       <el-col :span="16" class="updateTimeCol">
         <el-tag size="mini" type="warning">更新于{{lastUpdateTime}}</el-tag>
@@ -16,7 +22,15 @@
       <van-tab title="K/D折线图" class="vanTab">
         <el-row type="flex" justify="center">
           <el-col :span="20">
-            <el-slider v-model="selectedKdDays" show-input input-size="mini" :min="1" :max="maxKdLen" :step="1" :show-tooltip="false"></el-slider>
+            <el-slider
+              v-model="selectedKdDays"
+              show-input
+              input-size="mini"
+              :min="1"
+              :max="maxKdLen"
+              :step="1"
+              :show-tooltip="false"
+            ></el-slider>
           </el-col>
         </el-row>
         <el-row type="flex" justify="center">
@@ -29,7 +43,15 @@
       <van-tab title="击杀数折线图" class="vanTab">
         <el-row type="flex" justify="center">
           <el-col :span="20">
-            <el-slider v-model="selectedKillsDays" show-input input-size="mini" :min="1" :max="maxKillsLen" :step="1" :show-tooltip="false"></el-slider>
+            <el-slider
+              v-model="selectedKillsDays"
+              show-input
+              input-size="mini"
+              :min="1"
+              :max="maxKillsLen"
+              :step="1"
+              :show-tooltip="false"
+            ></el-slider>
           </el-col>
         </el-row>
         <el-row type="flex" justify="center">
@@ -42,7 +64,15 @@
       <van-tab title="SPM折线图" class="vanTab">
         <el-row type="flex" justify="center">
           <el-col :span="20">
-            <el-slider v-model="selectedSpmDays" show-input input-size="mini" :min="1" :max="maxSpmLen" :step="1" :show-tooltip="false"></el-slider>
+            <el-slider
+              v-model="selectedSpmDays"
+              show-input
+              input-size="mini"
+              :min="1"
+              :max="maxSpmLen"
+              :step="1"
+              :show-tooltip="false"
+            ></el-slider>
           </el-col>
         </el-row>
         <el-row type="flex" justify="center">
@@ -237,7 +267,7 @@ export default {
   },
   methods: {
     goBack () {
-      this.$router.push({name: 'PlayerStatusInfoView'})
+      window.history.back()
     },
     clearData () {
       this.kdLineOption.dataset.source.length = 0
@@ -272,16 +302,17 @@ export default {
           thisView.drawKDLineChart()
         } else {
           thisView.isGetDataSuccessfully = false
-          console.log('error')
         }
       }
       var onError = function (res) {
         thisView.historyLoading = false
         thisView.raiseError('数据表生成失败', '没有找到该用户')
+        window.history.back()
       }
       var onTimeout = function (res) {
         thisView.raiseError('数据表生成失败', '连接超时')
         thisView.historyLoading = false
+        window.history.back()
       }
       httpGet(params, onSuccess, onError, onTimeout, 45000)
     },
@@ -385,24 +416,23 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="stylus">
 .chartsView-wrap {
-    background-color #ffffff
-    min-height 100vh
-    .pageHeader {
-      padding-top 5px
-      margin-bottom 10px
+  background-color #ffffff
+  min-height 100vh
+  .pageHeader {
+    padding-top 5px
+    margin-bottom 10px
+  }
+  .updateTimeRow {
+    margin 10px 0px 10px 0px
+    text-align center
+  }
+  .echartsLinkRow {
+    margin 10px 0px 0px 0px
+    text-align center
+    .echartsLinkCol {
+      font-size 10px
+      color #909399
     }
-
-    .updateTimeRow {
-        margin 10px 0px 10px 0px
-        text-align center
-    }
-    .echartsLinkRow {
-        margin 10px 0px 0px 0px
-        text-align center
-        .echartsLinkCol {
-            font-size 10px
-            color #909399
-        }
-    }
+  }
 }
 </style>

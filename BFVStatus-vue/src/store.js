@@ -96,7 +96,7 @@ export default new Vuex.Store({
         }
       }
       if (!flag) {
-        if (state.playerIdHistory.length + 1 < 5) {
+        if (state.playerIdHistory.length < 5) {
           state.playerIdHistory.push(JSON.parse(playerIdHistory))
         } else {
           state.playerIdHistory.shift()

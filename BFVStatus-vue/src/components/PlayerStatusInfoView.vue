@@ -8,152 +8,191 @@
           <el-button type="text" size="mini" @click="onRefresh">刷新</el-button>
         </el-col>
       </el-row>
-    <el-row class="playerStatusRow-wrap" type="flex" justify="center">
-      <el-col :span="24">
-        <el-row type="flex" justify="center">
-          <el-col :span="5"><el-avatar :src="avatarSrc" :size="avatarSize"></el-avatar></el-col>
-          <el-col :span="10" class="playerMainInfoCol">
-            <el-row type="flex" justify="center">
-              <el-col :span="24" class="playername">{{playerID}}</el-col>
-            </el-row>
-            <el-row type="flex" justify="center">
-              <el-col :span="24" class="playerTime">
-                游戏时长:&nbsp;{{gameTimeByHours}}小时
-              </el-col>
-            </el-row>
-            <el-row type="flex" justify="center">
-              <el-col :span="24" class="playerrank">
-                <el-image style="width: 12px; height: 12px" :src="playerRankImg" fit="fill">
-                  <div slot="error" class="image-slot">
-                  <i class="el-icon-picture-outline"></i>
-                  </div>
-                </el-image>
-                {{playerRank}}{{playerRankPercentage}}
-              </el-col>
-            </el-row>
-          </el-col>
-        </el-row>
-      </el-col>
-    </el-row>
-    <el-row type="flex" class="chartsLinkBtn-wrap" justify="center">
-      <el-col :span="24" class="chartsLinkBtn">
-        <van-button type="warning" plain hairline size="small" @click="goToChartsView">查看近期战绩统计图</van-button>
-      </el-col>
-    </el-row>
-    <el-row type="flex" justify="center" class="hackerCheckRow">
-      <el-col :span="24">
-        <div class="hackerCheckCol">
-          <span style="color: #409EFF;" v-if="mayBeHacker === 'isChecking'"><i class="el-icon-loading"></i>正在检测是否疑似外挂...</span>
-          <span style="color: #F56C6C;" @click="showHackerCheckRes" v-if="mayBeHacker === 'isHacker'"><i class="el-icon-warning-outline"></i>疑似外挂 点击查看详情</span>
-          <span style="color: #67C23A;" @click="showHackerCheckMethod" v-if="mayBeHacker === 'isNotHacker'"><i class="el-icon-circle-check"></i>未发现外挂迹象 有疑问？</span>
-        </div>
+      <el-row class="playerStatusRow-wrap" type="flex" justify="center">
+        <el-col :span="24">
+          <el-row type="flex" justify="center">
+            <el-col :span="5">
+              <el-avatar :src="avatarSrc" :size="avatarSize"></el-avatar>
+            </el-col>
+            <el-col :span="10" class="playerMainInfoCol">
+              <el-row type="flex" justify="center">
+                <el-col :span="24" class="playername">{{playerID}}</el-col>
+              </el-row>
+              <el-row type="flex" justify="center">
+                <el-col :span="24" class="playerTime">游戏时长:&nbsp;{{gameTimeByHours}}小时</el-col>
+              </el-row>
+              <el-row type="flex" justify="center">
+                <el-col :span="24" class="playerrank">
+                  <el-image style="width: 12px; height: 12px" :src="playerRankImg" fit="fill">
+                    <div slot="error" class="image-slot">
+                      <i class="el-icon-picture-outline"></i>
+                    </div>
+                  </el-image>
+                  {{playerRank}}{{playerRankPercentage}}
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
         </el-col>
-    </el-row>
-    <van-tabs @click="eltabClick" v-loading="tabLoading" stretch v-model="vanTabActive">
-      <van-tab title="战绩概览">
-        <el-form class="statusMainInfo" label-position="left">
-          <el-form-item label="每分钟得分">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.spm}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.spmRank}}%</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="击杀/死亡比">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.kd}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.kdRank}}%</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="杀敌数">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.kills}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.killsRank}}%</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="每分钟击杀">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.kpm}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.kpmRank}}%</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="最高连杀">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.killStreak}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.killStreakRank}}%</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="爆头数量">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.headShot}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.headShotRank}}%&nbsp;&nbsp;</span>
-              <el-tag v-if="playerInfoOverview.headShotPer <= 30" type="primary" size="mini">爆头率{{playerInfoOverview.headShotPer}}%</el-tag>
-              <el-tag v-else-if="playerInfoOverview.headShotPer > 30 && playerInfoOverview.headShotPer < 50" type="warning" size="mini">爆头率{{playerInfoOverview.headShotPer}}%</el-tag>
-              <el-tag v-else-if="playerInfoOverview.headShotPer >= 50" type="danger" size="mini">爆头率{{playerInfoOverview.headShotPer}}%</el-tag>
-            </div>
-          </el-form-item>
-          <el-form-item label="最远爆头距离">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.longestHeadShot}}米</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.longestHeadShotRank}}%</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="胜率">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.winPercentage}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.winPerRank}}%</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="胜利次数">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.wins}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.winsRank}}%</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="死亡数">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.deaths}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.deathsRank}}%</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="助攻数">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.assists}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.assistsRank}}%</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="总伤害">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.dmg}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.dmgRank}}%</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="治疗量">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.heals}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.healsRank}}%</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="扶起队友数量">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.revives}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.revivesRank}}%</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="重新补给次数">
-            <div>
-              <span style="color: #409EFF">{{playerInfoOverview.resupplies}}</span>
-              <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.resuppliesRank}}%</span>
-            </div>
-          </el-form-item>
-        </el-form>
-      </van-tab>
-      <van-tab title="兵种信息">
-          <el-table :data="playerClassInfos" style="width: 100%" class="classInfoTable" border stripe>
+      </el-row>
+      <el-row type="flex" class="chartsLinkBtn-wrap" justify="center">
+        <el-col :span="24" class="chartsLinkBtn">
+          <van-button type="warning" plain hairline size="small" @click="goToChartsView">查看近期战绩统计图</van-button>
+        </el-col>
+      </el-row>
+      <el-row type="flex" justify="center" class="hackerCheckRow">
+        <el-col :span="24">
+          <div class="hackerCheckCol">
+            <span style="color: #409EFF;" v-if="mayBeHacker === 'isChecking'">
+              <i class="el-icon-loading"></i>正在检测是否疑似外挂...
+            </span>
+            <span
+              style="color: #F56C6C;"
+              @click="showHackerCheckRes"
+              v-if="mayBeHacker === 'isHacker'"
+            >
+              <i class="el-icon-warning-outline"></i>疑似外挂 点击查看详情
+            </span>
+            <span
+              style="color: #67C23A;"
+              @click="showHackerCheckMethod"
+              v-if="mayBeHacker === 'isNotHacker'"
+            >
+              <i class="el-icon-circle-check"></i>未发现外挂迹象 有疑问？
+            </span>
+            <span style="color: #E6A23C;" v-if="mayBeHacker === 'isTimeout'">
+              <i class="el-icon-warning-outline"></i>检测失败 未能获取玩家数据
+            </span>
+          </div>
+        </el-col>
+      </el-row>
+      <van-tabs @click="eltabClick" v-loading="tabLoading" stretch v-model="vanTabActive">
+        <van-tab title="战绩概览">
+          <el-form class="statusMainInfo" label-position="left">
+            <el-form-item label="每分钟得分">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.spm}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.spmRank}}%</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="击杀/死亡比">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.kd}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.kdRank}}%</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="杀敌数">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.kills}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.killsRank}}%</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="每分钟击杀">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.kpm}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.kpmRank}}%</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="最高连杀">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.killStreak}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.killStreakRank}}%</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="爆头数量">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.headShot}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.headShotRank}}%&nbsp;&nbsp;</span>
+                <el-tag
+                  v-if="playerInfoOverview.headShotPer <= 30"
+                  type="primary"
+                  size="mini"
+                >爆头率{{playerInfoOverview.headShotPer}}%</el-tag>
+                <el-tag
+                  v-else-if="playerInfoOverview.headShotPer > 30 && playerInfoOverview.headShotPer < 50"
+                  type="warning"
+                  size="mini"
+                >爆头率{{playerInfoOverview.headShotPer}}%</el-tag>
+                <el-tag
+                  v-else-if="playerInfoOverview.headShotPer >= 50"
+                  type="danger"
+                  size="mini"
+                >爆头率{{playerInfoOverview.headShotPer}}%</el-tag>
+              </div>
+            </el-form-item>
+            <el-form-item label="最远爆头距离">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.longestHeadShot}}米</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.longestHeadShotRank}}%</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="胜率">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.winPercentage}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.winPerRank}}%</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="胜利次数">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.wins}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.winsRank}}%</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="死亡数">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.deaths}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.deathsRank}}%</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="助攻数">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.assists}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.assistsRank}}%</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="总伤害">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.dmg}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.dmgRank}}%</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="治疗量">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.heals}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.healsRank}}%</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="扶起队友数量">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.revives}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.revivesRank}}%</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="重新补给次数">
+              <div>
+                <span style="color: #409EFF">{{playerInfoOverview.resupplies}}</span>
+                <span>&nbsp;&nbsp;排名&nbsp;>&nbsp;{{playerInfoOverview.resuppliesRank}}%</span>
+              </div>
+            </el-form-item>
+          </el-form>
+        </van-tab>
+        <van-tab title="兵种信息">
+          <el-table
+            :data="playerClassInfos"
+            style="width: 100%"
+            class="classInfoTable"
+            border
+            stripe
+          >
             <el-table-column type="expand">
               <template slot-scope="props">
                 <el-form :label-position="labelPosition" class="demo-table-expand" size="mini">
                   <el-form-item>
-                    <el-image :src="props.row.imageUrl" style="width: 50px; height: 50px" fit="fill"></el-image>
+                    <el-image
+                      :src="props.row.imageUrl"
+                      style="width: 50px; height: 50px"
+                      fit="fill"
+                    ></el-image>
                   </el-form-item>
                   <el-form-item>
                     <template slot="label" class="classFormLabel">时长</template>
@@ -194,121 +233,220 @@
             <el-table-column label="等级" prop="rank" width="55px"></el-table-column>
             <el-table-column label="时长" prop="time"></el-table-column>
           </el-table>
-      </van-tab>
-      <van-tab title="游戏记录" class="gameReportPane">
-        <el-table :data="gameReports" v-loading="gameReportsTabPaneLoading" size="mini" border v-el-table-infinite-scroll="load" max-height="100%" stripe>
-          <el-table-column label="操作" width="55px">
-            <template slot-scope="scope">
-              <el-button type="text" size="mini" @click="handleClick(scope.row)">详情</el-button>
-            </template>
-          </el-table-column>
-          <el-table-column label="服务器信息" width="200">
-            <template slot-scope="scope">
-              <div>
-                <el-row type="flex" justify="center">
+        </van-tab>
+        <van-tab title="游戏记录" class="gameReportPane">
+          <el-table
+            :data="gameReports"
+            v-loading="gameReportsTabPaneLoading"
+            size="mini"
+            border
+            v-el-table-infinite-scroll="load"
+            max-height="100%"
+            stripe
+          >
+            <el-table-column label="操作" width="55px">
+              <template slot-scope="scope">
+                <el-button type="text" size="mini" @click="handleClick(scope.row)">详情</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column label="服务器信息" width="200">
+              <template slot-scope="scope">
+                <div>
+                  <el-row type="flex" justify="center">
+                    <el-col :span="24">
+                      <el-tag type="success" size="mini">{{scope.row.modeKey | convertModeName}}</el-tag>
+                      <span style="font-weight: bold;">{{scope.row.mapKey | convertMapName}}</span>
+                    </el-col>
+                  </el-row>
+                  <el-row type="flex" justify="center">
+                    <el-col :span="24">
+                      <span>{{scope.row.serverName}}</span>
+                    </el-col>
+                  </el-row>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="时间" width="180px">
+              <template slot-scope="scope">
+                <span>{{scope.row.timestamp | convertTimestamp}}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </van-tab>
+        <van-tab title="武器信息">
+          <el-table v-loading="weaponsInfoLoading" :data="weaponsInfo" size="mini" border stripe>
+            <el-table-column type="expand" width="40px" fixed="left">
+              <template slot-scope="props">
+                <el-form size="mini" label-position="left" class="weaponInfoForm">
+                  <el-form-item label="击杀">
+                    <span style="color: #409EFF">{{props.row.stats[0].displayValue}}</span>
+                  </el-form-item>
+                  <el-form-item label="每分钟击杀">
+                    <span style="color: #409EFF">{{props.row.stats[1].displayValue}}</span>
+                  </el-form-item>
+                  <el-form-item label="使用时长">
+                    <span
+                      style="color: #409EFF"
+                    >{{props.row.stats[2].displayValue | convertTimeLan}}</span>
+                  </el-form-item>
+                  <el-form-item label="爆头数">
+                    <span style="color: #409EFF">{{props.row.stats[6].displayValue}}</span>
+                    <el-tag
+                      type="primary"
+                      size="mini"
+                      v-if="((props.row.stats[6].value / props.row.stats[0].value) * 100) < 30"
+                    >爆头率{{((props.row.stats[6].value / props.row.stats[0].value) * 100).toFixed(1)}}%</el-tag>
+                    <el-tag
+                      type="warning"
+                      size="mini"
+                      v-else-if="((props.row.stats[6].value / props.row.stats[0].value) * 100) >= 30 && ((props.row.stats[6].value / props.row.stats[0].value) * 100) < 50"
+                    >爆头率{{((props.row.stats[6].value / props.row.stats[0].value) * 100).toFixed(1)}}%</el-tag>
+                    <el-tag
+                      type="danger"
+                      size="mini"
+                      v-else-if="((props.row.stats[6].value / props.row.stats[0].value) * 100) >= 50"
+                    >爆头率{{((props.row.stats[6].value / props.row.stats[0].value) * 100).toFixed(1)}}%</el-tag>
+                  </el-form-item>
+                  <el-form-item label="开火次数">
+                    <span style="color: #409EFF">{{props.row.stats[3].displayValue}}</span>
+                  </el-form-item>
+                  <el-form-item label="命中次数">
+                    <span style="color: #409EFF">{{props.row.stats[4].displayValue}}</span>
+                    <el-tag
+                      type="primary"
+                      size="mini"
+                      v-if="props.row.stats[5].value < 30"
+                    >命中率{{props.row.stats[5].displayValue}}%</el-tag>
+                    <el-tag
+                      type="warning"
+                      size="mini"
+                      v-else-if="props.row.stats[5].value >= 30 && props.row.stats[5].value < 50"
+                    >命中率{{props.row.stats[5].displayValue}}%</el-tag>
+                    <el-tag
+                      type="danger"
+                      size="mini"
+                      v-else-if="props.row.stats[5].value >= 50"
+                    >命中率{{props.row.stats[5].displayValue}}%</el-tag>
+                  </el-form-item>
+                </el-form>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="名称"
+              :filters="weaponTypeOptions"
+              :filter-method="filterHandler"
+              filter-placement="bottom-end"
+              width="140px"
+            >
+              <template slot-scope="scope">
+                <el-row>
                   <el-col :span="24">
-                    <el-tag type="success" size="mini">{{scope.row.modeKey | convertModeName}}</el-tag>
-                    <span style="font-weight: bold;">{{scope.row.mapKey | convertMapName}}</span>
+                    <span
+                      style="font-weight: bolder;"
+                    >{{scope.row.metadata.name | convertWeaponName | convertGadgetName}}</span>
                   </el-col>
                 </el-row>
-                <el-row type="flex" justify="center">
+                <el-row>
                   <el-col :span="24">
-                    <span>{{scope.row.serverName}}</span>
+                    <el-tag type="warning" size="mini" plain>
+                      <i class="el-icon-star-on"></i>
+                      {{scope.row.stats[0].value | killStarsConvert}}
+                    </el-tag>
                   </el-col>
                 </el-row>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column label="时间" width="180px">
-            <template slot-scope="scope">
-              <span>{{scope.row.timestamp | convertTimestamp}}</span>
-            </template>
-          </el-table-column>
-        </el-table>
-      </van-tab>
-      <van-tab title="武器信息">
-        <el-table v-loading="weaponsInfoLoading" :data="weaponsInfo" size="mini" border stripe>
-          <el-table-column type="expand" width="40px" fixed="left">
-            <template slot-scope="props">
-              <el-form size="mini" label-position="left" class="weaponInfoForm">
-                <el-form-item label="击杀">
-                  <span style="color: #409EFF">{{props.row.stats[0].displayValue}}</span>
-                </el-form-item>
-                <el-form-item label="每分钟击杀">
-                  <span style="color: #409EFF">{{props.row.stats[1].displayValue}}</span>
-                </el-form-item>
-                <el-form-item label="使用时长">
-                  <span style="color: #409EFF">{{props.row.stats[2].displayValue | convertTimeLan}}</span>
-                </el-form-item>
-                <el-form-item label="爆头数">
-                  <span style="color: #409EFF">{{props.row.stats[6].displayValue}}</span>
-                  <el-tag type="primary" size="mini" v-if="((props.row.stats[6].value / props.row.stats[0].value) * 100) < 30">爆头率{{((props.row.stats[6].value / props.row.stats[0].value) * 100).toFixed(1)}}%</el-tag>
-                  <el-tag type="warning" size="mini" v-else-if="((props.row.stats[6].value / props.row.stats[0].value) * 100) >= 30 && ((props.row.stats[6].value / props.row.stats[0].value) * 100) < 50">爆头率{{((props.row.stats[6].value / props.row.stats[0].value) * 100).toFixed(1)}}%</el-tag>
-                  <el-tag type="danger" size="mini" v-else-if="((props.row.stats[6].value / props.row.stats[0].value) * 100) >= 50">爆头率{{((props.row.stats[6].value / props.row.stats[0].value) * 100).toFixed(1)}}%</el-tag>
-                </el-form-item>
-                <el-form-item label="开火次数">
-                  <span style="color: #409EFF">{{props.row.stats[3].displayValue}}</span>
-                </el-form-item>
-                <el-form-item label="命中次数">
-                  <span style="color: #409EFF">{{props.row.stats[4].displayValue}}</span>
-                  <el-tag type="primary" size="mini" v-if="props.row.stats[5].value < 30">命中率{{props.row.stats[5].displayValue}}%</el-tag>
-                  <el-tag type="warning" size="mini" v-else-if="props.row.stats[5].value >= 30 && props.row.stats[5].value < 50">命中率{{props.row.stats[5].displayValue}}%</el-tag>
-                  <el-tag type="danger" size="mini" v-else-if="props.row.stats[5].value >= 50">命中率{{props.row.stats[5].displayValue}}%</el-tag>
-                </el-form-item>
-              </el-form>
-            </template>
-          </el-table-column>
-          <el-table-column label="名称" :filters="weaponTypeOptions" :filter-method="filterHandler" filter-placement="bottom-end" width="140px">
-            <template slot-scope="scope">
-              <el-row>
-                <el-col :span="24"><span style="font-weight: bolder;">{{scope.row.metadata.name | convertWeaponName | convertGadgetName}}</span></el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="24"><el-tag type="warning" size="mini" plain><i class="el-icon-star-on"></i>{{scope.row.stats[0].value | killStarsConvert}}</el-tag></el-col>
-              </el-row>
-            </template>
-          </el-table-column>
-          <el-table-column label="使用时长" prop="stats[2]" sortable :formatter="weaponTimeFormatter" :sort-method="weaponTimeSort" width="150px"></el-table-column>
-          <el-table-column label="击杀数" prop="stats[0]" sortable :formatter="weaponKillsFormatter" :sort-method="weaponKillsSort" width="120px"></el-table-column>
-        </el-table>
-      </van-tab>
-      <van-tab title="载具信息">
-        <el-table :data="vehicleInfo" v-loading="vehicleInfoLoading" stripe border size="mini">
-          <el-table-column type="expand" fixed="left" width="40px">
-            <template slot-scope="props">
-              <el-form size="mini" label-position="left" class="vehicleInfoForm">
-                <el-form-item label="击杀">
-                  <span style="color: #409EFF">{{props.row.stats[0].displayValue}}</span>
-                </el-form-item>
-                <el-form-item label="每分钟击杀">
-                  <span style="color: #409EFF">{{props.row.stats[1].displayValue}}</span>
-                </el-form-item>
-                <el-form-item label="使用时长">
-                  <span style="color: #409EFF">{{props.row.stats[2].displayValue | convertTimeLan}}</span>
-                </el-form-item>
-                <el-form-item label="摧毁">
-                  <span style="color: #409EFF">{{props.row.stats[3].displayValue}}</span>
-                </el-form-item>
-              </el-form>
-            </template>
-          </el-table-column>
-          <el-table-column label="名称" :filters="vehicleTypeOptions" :filter-method="vehicleFilterHandler" filter-placement="bottom-end" width="140px">
-            <template slot-scope="scope">
-              <el-row>
-                <el-col :span="24"><span style="font-weight: bolder;">{{scope.row.metadata.name | convertVehicleName}}</span></el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="24"><el-tag type="warning" size="mini" plain><i class="el-icon-star-on"></i>{{scope.row.stats[0].value | killStarsConvert}}</el-tag></el-col>
-              </el-row>
-            </template>
-          </el-table-column>
-          <el-table-column label="使用时长" prop="stats[2]" sortable :formatter="vehicleTimeFormatter" :sort-method="vehicleTimeSort" width="150px"></el-table-column>
-          <el-table-column label="击杀数" prop="stats[0]" sortable :formatter="vehicleKillsFormatter" :sort-method="vehicleKillsSort" width="120px"></el-table-column>
-        </el-table>
-      </van-tab>
-    </van-tabs>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="使用时长"
+              prop="stats[2]"
+              sortable
+              :formatter="weaponTimeFormatter"
+              :sort-method="weaponTimeSort"
+              width="150px"
+            ></el-table-column>
+            <el-table-column
+              label="击杀数"
+              prop="stats[0]"
+              sortable
+              :formatter="weaponKillsFormatter"
+              :sort-method="weaponKillsSort"
+              width="120px"
+            ></el-table-column>
+          </el-table>
+        </van-tab>
+        <van-tab title="载具信息">
+          <el-table :data="vehicleInfo" v-loading="vehicleInfoLoading" stripe border size="mini">
+            <el-table-column type="expand" fixed="left" width="40px">
+              <template slot-scope="props">
+                <el-form size="mini" label-position="left" class="vehicleInfoForm">
+                  <el-form-item label="击杀">
+                    <span style="color: #409EFF">{{props.row.stats[0].displayValue}}</span>
+                  </el-form-item>
+                  <el-form-item label="每分钟击杀">
+                    <span style="color: #409EFF">{{props.row.stats[1].displayValue}}</span>
+                  </el-form-item>
+                  <el-form-item label="使用时长">
+                    <span
+                      style="color: #409EFF"
+                    >{{props.row.stats[2].displayValue | convertTimeLan}}</span>
+                  </el-form-item>
+                  <el-form-item label="摧毁">
+                    <span style="color: #409EFF">{{props.row.stats[3].displayValue}}</span>
+                  </el-form-item>
+                </el-form>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="名称"
+              :filters="vehicleTypeOptions"
+              :filter-method="vehicleFilterHandler"
+              filter-placement="bottom-end"
+              width="140px"
+            >
+              <template slot-scope="scope">
+                <el-row>
+                  <el-col :span="24">
+                    <span
+                      style="font-weight: bolder;"
+                    >{{scope.row.metadata.name | convertVehicleName}}</span>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="24">
+                    <el-tag type="warning" size="mini" plain>
+                      <i class="el-icon-star-on"></i>
+                      {{scope.row.stats[0].value | killStarsConvert}}
+                    </el-tag>
+                  </el-col>
+                </el-row>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="使用时长"
+              prop="stats[2]"
+              sortable
+              :formatter="vehicleTimeFormatter"
+              :sort-method="vehicleTimeSort"
+              width="150px"
+            ></el-table-column>
+            <el-table-column
+              label="击杀数"
+              prop="stats[0]"
+              sortable
+              :formatter="vehicleKillsFormatter"
+              :sort-method="vehicleKillsSort"
+              width="120px"
+            ></el-table-column>
+          </el-table>
+        </van-tab>
+      </van-tabs>
     </van-pull-refresh>
-    <van-popup v-model="showIsHackerPopup" position="bottom" closeable close-icon-position="top-left">
+    <van-popup
+      v-model="showIsHackerPopup"
+      position="bottom"
+      closeable
+      close-icon-position="top-left"
+    >
       <div class="inIsHackerPopup">
         <el-row class="instructionRow" type="flex" justify="center">
           <el-col :span="24">
@@ -320,9 +458,17 @@
         <div class="isNotHackerRow">
           <el-row>
             <el-col :span="24">
-              <p>根据超过100击杀的武器进行计算：1、针对武器类型为：<span style="font-weight: bolder">突击步枪、冲锋枪、固定式机枪、轻机枪、手枪型卡宾枪和手枪</span>。
-              上述武器中如果爆头率高于50%或爆头率高于35%的武器数量超过30%将会被判定为外挂。
-              2、针对武器类型为：<span style="font-weight: bolder">手动枪机卡宾枪、单动式步枪</span>。上述武器中如果爆头率高于80%且KPM高于2的武器数量超过50%将会被判定为外挂</p>
+              <p>
+                根据超过100击杀的武器进行计算：1、针对武器类型为：
+                <span
+                  style="font-weight: bolder"
+                >突击步枪、冲锋枪、固定式机枪、轻机枪、手枪型卡宾枪和手枪</span>。
+                上述武器中如果爆头率高于50%或爆头率高于35%的武器数量超过30%将会被判定为外挂。
+                2、针对武器类型为：
+                <span
+                  style="font-weight: bolder"
+                >手动枪机卡宾枪、单动式步枪</span>。上述武器中如果爆头率高于80%且KPM高于2的武器数量超过50%将会被判定为外挂
+              </p>
             </el-col>
           </el-row>
         </div>
@@ -330,27 +476,42 @@
           <el-divider>检测结果</el-divider>
           <el-row class="checkResRow" type="flex" justify="center">
             <el-col :span="24">
-              <span>超过百杀的非栓狙武器数量：<span style="color: #409EFF">{{over100KillsWeaponCount}}</span></span>
+              <span>
+                超过百杀的非栓狙武器数量：
+                <span style="color: #409EFF">{{over100KillsWeaponCount}}</span>
+              </span>
             </el-col>
           </el-row>
           <el-row class="checkResRow" type="flex" justify="center">
             <el-col :span="24">
-              <span>其中爆头率高于35%的武器数量：<span style="color: #409EFF">{{overSetHeadshotWeaponCount}}</span></span>
+              <span>
+                其中爆头率高于35%的武器数量：
+                <span style="color: #409EFF">{{overSetHeadshotWeaponCount}}</span>
+              </span>
             </el-col>
           </el-row>
           <el-row class="checkResRow" type="flex" justify="center">
             <el-col :span="24">
-              <span>其中爆头率高于50%的武器数量：<span style="color: #409EFF">{{over50HeadshotWeaponCount}}</span></span>
+              <span>
+                其中爆头率高于50%的武器数量：
+                <span style="color: #409EFF">{{over50HeadshotWeaponCount}}</span>
+              </span>
             </el-col>
           </el-row>
           <el-row class="checkResRow" type="flex" justify="center">
             <el-col :span="24">
-              <span>超过百杀的栓狙武器数量：<span style="color: #409EFF">{{over100KillsSnipersCount}}</span></span>
+              <span>
+                超过百杀的栓狙武器数量：
+                <span style="color: #409EFF">{{over100KillsSnipersCount}}</span>
+              </span>
             </el-col>
           </el-row>
           <el-row class="checkResRow" type="flex" justify="center">
             <el-col :span="24">
-              <span>其中爆头率高于80%且KPM高于2的数量：<span style="color: #409EFF">{{over80HSAnd2KpmCount}}</span></span>
+              <span>
+                其中爆头率高于80%且KPM高于2的数量：
+                <span style="color: #409EFF">{{over80HSAnd2KpmCount}}</span>
+              </span>
             </el-col>
           </el-row>
         </div>
@@ -529,7 +690,7 @@ export default {
       this.getClassData(5, 'Tanker')
     },
     goBack () {
-      this.$router.push({name: 'UserSearchView'})
+      window.history.back()
     },
     getLastUpdateTime () {
       var lastUpdateDate = new Date(this.playerData.data.metadata.lastUpdated.displayValue)
@@ -673,10 +834,12 @@ export default {
       var onError = function () {
         thisView.weaponsInfoLoading = false
         thisView.raiseError('查询失败', '未找到用户的武器使用记录')
+        thisView.mayBeHacker = 'isTimeout'
       }
       var onTimeOut = function () {
         thisView.raiseError('查询失败', '连接超时')
         thisView.weaponsInfoLoading = false
+        thisView.mayBeHacker = 'isTimeout'
       }
       httpGet(params, onSuccess, onError, onTimeOut, 45000)
     },
@@ -703,7 +866,6 @@ export default {
       httpGet(params, onSuccess, onError, onTimeOut, 45000)
     },
     eltabClick (name, title) {
-      console.log(name)
       this.setTabActive(name)
       if (name === 2) {
         this.banRefresh = true
@@ -758,7 +920,6 @@ export default {
     },
     getTabActive () {
       this.vanTabActive = this.$store.getters.getTabActive
-      console.log('get:' + this.vanTabActive)
     },
     setTabActive (index) {
       this.$store.commit('setTabActive', index)
@@ -807,12 +968,8 @@ export default {
       return vehicleNameConvert(value)
     },
     'killStarsConvert': function (value) {
+      // eslint-disable-next-line radix
       return parseInt(value / 100)
-    }
-  },
-  watch: {
-    weaponType: function (newVal, oldVal) {
-      console.log(newVal)
     }
   }
 }
@@ -830,7 +987,6 @@ export default {
   .playerStatusRow-wrap {
     margin-top 20px
     margin-bottom 5px
-
     .playerMainInfoCol {
       .plaayername {
         margin 2px 0 2px 0
@@ -859,7 +1015,7 @@ export default {
   }
   .mainInfoRow {
     .el-carousel {
-      .el-carousel__item h3{
+      .el-carousel__item h3 {
         text-align center
       }
       .el-carousel__item:nth-child(2n) {

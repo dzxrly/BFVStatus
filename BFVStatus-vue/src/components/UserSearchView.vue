@@ -1,22 +1,39 @@
 <template>
-    <div class="userSearch-wrap" >
-      <div class="load" v-if="fullscreenLoading">
-        <Loading></Loading>
-      </div>
-      <div>
+  <div class="userSearch-wrap">
+    <div class="load" v-if="fullscreenLoading">
+      <Loading></Loading>
+    </div>
+    <div>
       <el-row class="container-wrap" type="flex" justify="center">
         <el-col :span="18" class="formCol">
           <div class="inCol">
             <div class="appName">战地V战绩查询助手</div>
             <el-alert type="warning" title="当前版本为测试版" :closable="false" show-icon v-if="isTestVer"></el-alert>
-            <el-form ref="form" :model="formInfo" :rules="rules" class="form" label-position="top" size="mini">
+            <el-form
+              ref="form"
+              :model="formInfo"
+              :rules="rules"
+              class="form"
+              label-position="top"
+              size="mini"
+            >
               <el-form-item label="平台" prop="userPlatform">
                 <el-select v-model="formInfo.userPlatform" placeholder="请选择平台" filterable clearable>
-                  <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="用户名" prop="userName">
-                <el-autocomplete v-model="formInfo.userName" :fetch-suggestions="querySearch" placeholder="请输入用户名" clearable></el-autocomplete>
+                <el-autocomplete
+                  v-model.trim="formInfo.userName"
+                  :fetch-suggestions="querySearch"
+                  placeholder="请输入用户名"
+                  clearable
+                ></el-autocomplete>
               </el-form-item>
               <el-form-item>
                 <el-row>
@@ -30,56 +47,74 @@
               <el-col :span="24" style="text-align: right;">
                 <div v-loading="versionCheckLoading">
                   <el-tag size="mini" type="success" v-if="isLatestVer === 1">已是最新版本</el-tag>
-                  <el-tag size="mini" type="warning" v-else-if="isLatestVer === 0" @click="openDLPage">发现新版本，点击下载</el-tag>
-                  <el-tag size="mini" type="danger" v-else-if="isLatestVer === 2" @click="reCheck">版本检测失败，点击重新检测</el-tag>
+                  <el-tag
+                    size="mini"
+                    type="warning"
+                    v-else-if="isLatestVer === 0"
+                    @click="openDLPage"
+                  >发现新版本，点击下载</el-tag>
+                  <el-tag
+                    size="mini"
+                    type="danger"
+                    v-else-if="isLatestVer === 2"
+                    @click="reCheck"
+                  >版本检测失败，点击重新检测</el-tag>
                 </div>
               </el-col>
             </el-row>
           </div>
         </el-col>
-    </el-row>
-    <el-row class="footerRow" type="flex" justify="center">
-      <el-col :span="24">
-        <p class="word" @click="raiseAbout">{{tagName}}&nbsp;|&nbsp;By&nbsp;ViveLaCCCP</p>
-        <van-popup v-model="showPopup" position="bottom" closeable close-icon-position='top-left'>
-          <div class="inPopupRow">
-            <el-row type="flex" justify="center">
-              <el-col style="text-align: center" :span="24">
-                战地V战绩查询助手
-              </el-col>
-            </el-row>
-            <el-row type="flex" justify="center">
-              <el-col style="text-align: center" :span="24">
-                <el-button type="info" round size="mini" plain @click="goToGithub"><img src="../assets/social_github.svg">&nbsp;Github</el-button>
-              </el-col>
-            </el-row>
-            <el-divider>Data Source</el-divider>
-            <el-row type="flex" justify="center" class="dataSrcText">
-              <el-col :span="24" style="text-align: center">All Data From <el-button type="text" size="mini" @click="goToTRN">TRACKER NETWORK</el-button></el-col>
-            </el-row>
-            <el-divider>{{tagName}}</el-divider>
-            <el-row type="flex" justify="left">
-              <el-col :span="24">作者: ViveLaCCCP</el-col>
-            </el-row>
-            <el-row type="flex" justify="left">
-              <el-col :span="24">Origin ID: ViveLaCCCP</el-col>
-            </el-row>
-            <el-row type="flex" justify="left">
-              <el-col :span="24">Steam ID: Egg_Targaryen</el-col>
-            </el-row>
-            <el-divider>Powered By Vue.js</el-divider>
-            <el-row type="flex" justify="center" class="vueText">
-              <el-col :span="24" style="text-align: center"><img :src="vueLogo" style="width: 16px;height: 16px;"></el-col>
-            </el-row>
-            <el-row type="flex" justify="center" class="vueText">
-              <el-col :span="24" style="text-align: center">An Element &amp; Vant Front-end Program</el-col>
-            </el-row>
-          </div>
-        </van-popup>
-      </el-col>
-    </el-row>
+      </el-row>
+      <el-row class="footerRow" type="flex" justify="center">
+        <el-col :span="24">
+          <p class="word" @click="raiseAbout">{{tagName}}&nbsp;|&nbsp;By&nbsp;ViveLaCCCP</p>
+          <van-popup v-model="showPopup" position="bottom" closeable close-icon-position="top-left">
+            <div class="inPopupRow">
+              <el-row type="flex" justify="center">
+                <el-col style="text-align: center" :span="24">战地V战绩查询助手</el-col>
+              </el-row>
+              <el-row type="flex" justify="center">
+                <el-col style="text-align: center" :span="24">
+                  <el-button type="info" round size="mini" plain @click="goToGithub">
+                    <img src="../assets/social_github.svg" />&nbsp;Github
+                  </el-button>
+                </el-col>
+              </el-row>
+              <el-divider>Data Source</el-divider>
+              <el-row type="flex" justify="center" class="dataSrcText">
+                <el-col :span="24" style="text-align: center">
+                  All Data From
+                  <el-button type="text" size="mini" @click="goToTRN">TRACKER NETWORK</el-button>
+                </el-col>
+              </el-row>
+              <el-divider>{{tagName}}</el-divider>
+              <el-row type="flex" justify="left">
+                <el-col :span="24">作者: ViveLaCCCP</el-col>
+              </el-row>
+              <el-row type="flex" justify="left">
+                <el-col :span="24">Origin ID: ViveLaCCCP</el-col>
+              </el-row>
+              <el-row type="flex" justify="left">
+                <el-col :span="24">Steam ID: Egg_Targaryen</el-col>
+              </el-row>
+              <el-divider>Powered By Vue.js</el-divider>
+              <el-row type="flex" justify="center" class="vueText">
+                <el-col :span="24" style="text-align: center">
+                  <img :src="vueLogo" style="width: 16px;height: 16px;" />
+                </el-col>
+              </el-row>
+              <el-row type="flex" justify="center" class="vueText">
+                <el-col
+                  :span="24"
+                  style="text-align: center"
+                >An Element &amp; Vant Front-end Program</el-col>
+              </el-row>
+            </div>
+          </van-popup>
+        </el-col>
+      </el-row>
     </div>
-    </div>
+  </div>
 </template>
 
 <script>
@@ -104,7 +139,7 @@ export default {
     return {
       versionCheckLoading: true,
       isLatestVer: 1,
-      tagName: 'Ver.1.4.1-alpha',
+      tagName: 'Ver.1.4.2',
       isTestVer: false,
       githubReleaseUrl: 'https://api.github.com/repos/dzxrly/BFVStatus/releases/latest',
       githubLink: 'https://github.com/dzxrly/BFVStatus',
@@ -264,9 +299,9 @@ export default {
         padding-top 5px
         padding-left 5px
         padding-right 5px
-        border 1px solid rgba(0, 0, 0, .04)
+        border 1px solid rgba(0, 0, 0, 0.04)
         border-radius 4px
-        box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+        box-shadow 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04)
         .appName {
           margin 5px 5px 15px 5px
           text-align center
