@@ -1,21 +1,21 @@
 <template>
   <div class="load-ani">
-    <svg height="91" width="65">
+    <svg height="91"
+         width="65">
       <!-- <polyline class="load-logoBG" fill="none" :stroke="logoColorBG" stroke-width="2"
             points="1,1 21,1 33,44 44,1 64,1 33,90 1,1"
       stroke-linecap="round" stroke-linejoin="round"></polyline>-->
-      <polyline
-        class="load-logo"
-        fill="none"
-        :stroke="logoColor"
-        stroke-width="2"
-        points="1,1 21,1 33,44 44,1 64,1 33,90 1,1"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
+      <polyline class="load-logo"
+                fill="none"
+                :stroke="logoColor"
+                stroke-width="2"
+                points="1,1 21,1 33,44 44,1 64,1 33,90 1,1"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
     </svg>
     <h3 class="load-text">加载中...</h3>
-    <p class="load-slowTip" v-if="isLoadSlow">与BFVTracker连接状态较差，请耐心等待</p>
+    <p class="load-slowTip"
+       v-if="isLoadSlow">与BFVTracker连接状态较差，请耐心等待</p>
   </div>
 </template>
 

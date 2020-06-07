@@ -13,7 +13,9 @@ export default new Vuex.Store({
     vehicleInfo: null,
     tabActive: 0,
     history: null,
-    playerIdHistory: []
+    playerIdHistory: [],
+    versionCheckedDate: 0,
+    versionCheckedRes: 1
   },
   getters: {
     getJSONData (state) {
@@ -58,9 +60,21 @@ export default new Vuex.Store({
     getPlayerIdHistory (state) {
       if (state.playerIdHistory) return state.playerIdHistory
       else return null
+    },
+    getVersionCheckedDate (state) {
+      return state.versionCheckedDate
+    },
+    getVersionCheckedRes (state) {
+      return state.versionCheckedRes
     }
   },
   mutations: {
+    setVersionCheckedRes (state, versionCheckedRes) {
+      state.versionCheckedRes = versionCheckedRes
+    },
+    setVersionCheckedDate (state, versionCheckedDate) {
+      state.versionCheckedDate = versionCheckedDate
+    },
     setData (state, data) {
       state.data = data
     },
@@ -108,7 +122,9 @@ export default new Vuex.Store({
   plugins: [createPersistedState({
     reducer (val) {
       return {
-        playerIdHistory: val.playerIdHistory
+        playerIdHistory: val.playerIdHistory,
+        versionCheckedDate: val.versionCheckedDate,
+        versionCheckedRes: val.versionCheckedRes
       }
     }
   })]

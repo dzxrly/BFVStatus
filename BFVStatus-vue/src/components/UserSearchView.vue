@@ -1,113 +1,149 @@
 <template>
   <div class="userSearch-wrap">
-    <div class="load" v-if="fullscreenLoading">
+    <div class="load"
+         v-if="fullscreenLoading">
       <Loading></Loading>
     </div>
     <div>
-      <el-row class="container-wrap" type="flex" justify="center">
-        <el-col :span="18" class="formCol">
+      <el-row class="container-wrap"
+              type="flex"
+              justify="center">
+        <el-col :span="18"
+                class="formCol">
           <div class="inCol">
             <div class="appName">战地V战绩查询助手</div>
-            <el-alert type="warning" title="当前版本为测试版" :closable="false" show-icon v-if="isTestVer"></el-alert>
-            <el-form
-              ref="form"
-              :model="formInfo"
-              :rules="rules"
-              class="form"
-              label-position="top"
-              size="mini"
-            >
-              <el-form-item label="平台" prop="userPlatform">
-                <el-select v-model="formInfo.userPlatform" placeholder="请选择平台" filterable clearable>
-                  <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
+            <el-alert type="warning"
+                      title="当前版本为测试版"
+                      :closable="false"
+                      show-icon
+                      v-if="isTestVer"></el-alert>
+            <el-form ref="form"
+                     :model="formInfo"
+                     :rules="rules"
+                     class="form"
+                     label-position="top"
+                     size="mini">
+              <el-form-item label="平台"
+                            prop="userPlatform">
+                <el-select v-model="formInfo.userPlatform"
+                           placeholder="请选择平台"
+                           filterable
+                           clearable>
+                  <el-option v-for="item in options"
+                             :key="item.value"
+                             :label="item.label"
+                             :value="item.value"></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="用户名" prop="userName">
-                <el-autocomplete
-                  v-model.trim="formInfo.userName"
-                  :fetch-suggestions="querySearch"
-                  placeholder="请输入用户名"
-                  clearable
-                ></el-autocomplete>
+              <el-form-item label="用户名"
+                            prop="userName">
+                <el-autocomplete v-model.trim="formInfo.userName"
+                                 :fetch-suggestions="querySearch"
+                                 placeholder="请输入用户名"
+                                 clearable></el-autocomplete>
               </el-form-item>
               <el-form-item>
                 <el-row>
                   <el-col :span="10">
-                    <el-button type="primary" @click="submit('form')" plain>查询</el-button>
+                    <el-button type="primary"
+                               @click="submit('form')"
+                               plain>查询</el-button>
                   </el-col>
                 </el-row>
               </el-form-item>
             </el-form>
-            <el-row style="margin: 0 0 10px 0;" type="flex" justify="end">
-              <el-col :span="24" style="text-align: right;">
+            <el-row style="margin: 0 0 10px 0;"
+                    type="flex"
+                    justify="end">
+              <el-col :span="24"
+                      style="text-align: right;">
                 <div v-loading="versionCheckLoading">
-                  <el-tag size="mini" type="success" v-if="isLatestVer === 1">已是最新版本</el-tag>
-                  <el-tag
-                    size="mini"
-                    type="warning"
-                    v-else-if="isLatestVer === 0"
-                    @click="openDLPage"
-                  >发现新版本，点击下载</el-tag>
-                  <el-tag
-                    size="mini"
-                    type="danger"
-                    v-else-if="isLatestVer === 2"
-                    @click="reCheck"
-                  >版本检测失败，点击重新检测</el-tag>
+                  <el-tag size="mini"
+                          type="success"
+                          v-if="isLatestVer === 1">已是最新版本</el-tag>
+                  <el-tag size="mini"
+                          type="warning"
+                          v-else-if="isLatestVer === 0"
+                          @click="openDLPage">发现新版本，点击下载</el-tag>
+                  <el-tag size="mini"
+                          type="danger"
+                          v-else-if="isLatestVer === 2"
+                          @click="reCheck">版本检测失败，点击重新检测</el-tag>
                 </div>
               </el-col>
             </el-row>
           </div>
         </el-col>
       </el-row>
-      <el-row class="footerRow" type="flex" justify="center">
+      <el-row class="footerRow"
+              type="flex"
+              justify="center">
         <el-col :span="24">
-          <p class="word" @click="raiseAbout">{{tagName}}&nbsp;|&nbsp;By&nbsp;ViveLaCCCP</p>
-          <van-popup v-model="showPopup" position="bottom" closeable close-icon-position="top-left">
+          <p class="word"
+             @click="raiseAbout">{{tagName}}&nbsp;|&nbsp;By&nbsp;ViveLaCCCP</p>
+          <van-popup v-model="showPopup"
+                     position="bottom"
+                     closeable
+                     close-icon-position="top-left">
             <div class="inPopupRow">
-              <el-row type="flex" justify="center">
-                <el-col style="text-align: center" :span="24">战地V战绩查询助手</el-col>
+              <el-row type="flex"
+                      justify="center">
+                <el-col style="text-align: center"
+                        :span="24">战地V战绩查询助手</el-col>
               </el-row>
-              <el-row type="flex" justify="center">
-                <el-col style="text-align: center" :span="24">
-                  <el-button type="info" round size="mini" plain @click="goToGithub">
+              <el-row type="flex"
+                      justify="center">
+                <el-col style="text-align: center"
+                        :span="24">
+                  <el-button type="info"
+                             round
+                             size="mini"
+                             plain
+                             @click="goToGithub">
                     <img src="../assets/social_github.svg" />&nbsp;Github
                   </el-button>
                 </el-col>
               </el-row>
               <el-divider>Data Source</el-divider>
-              <el-row type="flex" justify="center" class="dataSrcText">
-                <el-col :span="24" style="text-align: center">
+              <el-row type="flex"
+                      justify="center"
+                      class="dataSrcText">
+                <el-col :span="24"
+                        style="text-align: center">
                   All Data From
-                  <el-button type="text" size="mini" @click="goToTRN">TRACKER NETWORK</el-button>
+                  <el-button type="text"
+                             size="mini"
+                             @click="goToTRN">TRACKER NETWORK</el-button>
                 </el-col>
               </el-row>
               <el-divider>{{tagName}}</el-divider>
-              <el-row type="flex" justify="left">
+              <el-row type="flex"
+                      justify="left">
                 <el-col :span="24">作者: ViveLaCCCP</el-col>
               </el-row>
-              <el-row type="flex" justify="left">
+              <el-row type="flex"
+                      justify="left">
                 <el-col :span="24">Origin ID: ViveLaCCCP</el-col>
               </el-row>
-              <el-row type="flex" justify="left">
+              <el-row type="flex"
+                      justify="left">
                 <el-col :span="24">Steam ID: Egg_Targaryen</el-col>
               </el-row>
               <el-divider>Powered By Vue.js</el-divider>
-              <el-row type="flex" justify="center" class="vueText">
-                <el-col :span="24" style="text-align: center">
-                  <img :src="vueLogo" style="width: 16px;height: 16px;" />
+              <el-row type="flex"
+                      justify="center"
+                      class="vueText">
+                <el-col :span="24"
+                        style="text-align: center">
+                  <img :src="vueLogo"
+                       style="width: 16px;height: 16px;" />
                 </el-col>
               </el-row>
-              <el-row type="flex" justify="center" class="vueText">
-                <el-col
-                  :span="24"
-                  style="text-align: center"
-                >An Element &amp; Vant Front-end Program</el-col>
+              <el-row type="flex"
+                      justify="center"
+                      class="vueText">
+                <el-col :span="24"
+                        style="text-align: center">An Element &amp; Vant Front-end Program</el-col>
               </el-row>
             </div>
           </van-popup>
@@ -139,12 +175,12 @@ export default {
     return {
       versionCheckLoading: true,
       isLatestVer: 1,
-      tagName: 'Ver.1.4.2',
+      tagName: 'Ver.1.4.3',
       isTestVer: false,
       githubReleaseUrl: 'https://api.github.com/repos/dzxrly/BFVStatus/releases/latest',
       githubLink: 'https://github.com/dzxrly/BFVStatus',
       trnLink: 'https://tracker.gg/',
-      latestVerHtmlUrl: '',
+      latestVerHtmlUrl: 'https://github.com/dzxrly/BFVStatus/releases/latest',
       githubAssetsUrl: '',
       downloadUrl: '',
       vueLogo: require('../assets/logo.png'),
@@ -167,23 +203,30 @@ export default {
       },
       rules: {
         userPlatform: [
-          {validator: validateUserPlatform, trigger: 'blur'}
+          { validator: validateUserPlatform, trigger: 'blur' }
         ],
         userName: [
-          {validator: validateUserName, trigger: 'blur'}
+          { validator: validateUserName, trigger: 'blur' }
         ]
       },
       playerIdHistory: []
     }
   },
-  created () {
-    this.getVersionInfo()
-  },
   mounted () {
+    this.getLastCheckVerRes()
+    this.checkNeedToUpdate()
     this.getPlayerIdHistory()
     this.checkIsTestVersion()
+    // this.getStoredVer()
   },
   methods: {
+    getStoredVer () {
+      console.log(this.$store.getters.getVersionCheckedRes + '__' + this.$store.getters.getVersionCheckedDate)
+    },
+    getLastCheckVerRes () {
+      this.isLatestVer = this.$store.getters.getVersionCheckedRes
+      console.log(this.$store.getters.getVersionCheckedRes)
+    },
     checkIsTestVersion () {
       if (this.tagName.indexOf('alpha') !== -1 || this.tagName.indexOf('beta') !== -1) {
         this.isTestVer = true
@@ -223,7 +266,7 @@ export default {
         storeData.commit('setUsername', thisView.formInfo.userName)
         var playerId = ('{ "value":"' + thisView.formInfo.userName + '" }').replace(new RegExp('\\"', 'gm'), '"')
         storeData.commit('setPlayerIdHistory', playerId)
-        thisView.$router.push({name: 'PlayerStatusInfoView'})
+        thisView.$router.push({ name: 'PlayerStatusInfoView' })
       }
       thisView.fullscreenLoading = true
       httpGet(params, onSuccess, onError, onTimeOut, 45000)
@@ -235,10 +278,11 @@ export default {
       var onSuccess = function (res) {
         if (thisView.tagName === JSON.parse(res).tag_name) {
           thisView.isLatestVer = 1
+          thisView.$store.commit('setVersionCheckedRes', 1)
         } else {
           thisView.isLatestVer = 0
+          thisView.$store.commit('setVersionCheckedRes', 0)
           thisView.githubAssetsUrl = JSON.parse(res).assets[0].url
-          thisView.latestVerHtmlUrl = JSON.parse(res).html_url
         }
         thisView.versionCheckLoading = false
       }
@@ -246,16 +290,19 @@ export default {
         thisView.isLatestVer = 2
         thisView.raiseError('版本检测失败', '无法连接至Github')
         thisView.versionCheckLoading = false
+        thisView.$store.commit('setVersionCheckedRes', 2)
       }
       var onTimeOut = function (res) {
         thisView.isLatestVer = 2
         thisView.raiseError('版本检测失败', '无法连接至Github')
         thisView.versionCheckLoading = false
+        thisView.$store.commit('setVersionCheckedRes', 2)
       }
       httpGet(params, onSuccess, onError, onTimeOut, 45000)
     },
     reCheck () {
       this.getVersionInfo()
+      this.storeUpdateTime()
     },
     submit (formname) {
       this.$refs[formname].validate((valid) => {
@@ -283,6 +330,21 @@ export default {
     },
     goToTRN () {
       window.open(this.trnLink)
+    },
+    storeUpdateTime () {
+      let updateTimetamp = new Date().getTime()
+      this.$store.commit('setVersionCheckedDate', updateTimetamp)
+    },
+    checkNeedToUpdate () {
+      let nowTimetamp = new Date().getTime()
+      let lastUpdateTimetamp = this.$store.getters.getVersionCheckedDate
+      let timeDiff = nowTimetamp - lastUpdateTimetamp
+      let diffDays = Math.floor(timeDiff / (24 * 3600 * 1000))
+      if (diffDays !== 0) {
+        console.log('update checked')
+        this.getVersionInfo()
+        this.storeUpdateTime()
+      } else this.versionCheckLoading = false
     }
   }
 }
@@ -293,6 +355,7 @@ export default {
   .container-wrap {
     min-height 95vh
     .formCol {
+
       .inCol {
         background-color #ffffff
         margin-top 70%

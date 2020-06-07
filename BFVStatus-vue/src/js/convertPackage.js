@@ -27,7 +27,11 @@ var MapKeyToCNName = {
   'MP_WE_CQS_Rotterdam': '鹿特丹',
   'MP_WE_CQS_Arras': '阿拉斯',
   'MP_WE_CQS_ActicFjell': '菲耶尔652',
-  'MP_Rotterdam': '鹿特丹'
+  'MP_Rotterdam': '鹿特丹',
+  'MP_Hannut_US': '战车风暴(美德)',
+  'MP_Libya': '迈尔季营地',
+  'MP_Escaut_US': '扭曲钢铁(美德)',
+  'MP_WE_Grind_ArcticFjord': '纳尔维克(鏖战)'
 }
 var ModelKeyToCNName = {
   'Breakthrough0': '突破',
