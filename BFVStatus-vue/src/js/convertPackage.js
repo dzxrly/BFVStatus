@@ -44,7 +44,8 @@ var ModelKeyToCNName = {
   'FrontlinesMedium0': '前线(中型)',
   'SquadConquest0': '小队征服',
   'Outpost0': '前哨',
-  'Rush0': '突袭'
+  'Rush0': '突袭',
+  'Domination0': '抢攻'
 }
 var CountryKeyToCNName = {
   'Germany': '德国',
@@ -115,9 +116,26 @@ var WeaponKeyToCNName = {
   'Type 97 MG': '九七式车载重机枪',
   'Model 37': 'Model 37 霰弹枪',
   'The Unexpected Gift': '意外礼物',
-  'Lunge Mine': '刺雷',
-  'Kunai': '苦无',
-  'M1A1 Bazooka': 'M1A1 火箭筒'
+  'M3 Infrared': 'M3红外线狙击步枪',
+  'Welrod': '威尔洛德微声手枪',
+  'Welgun': '威尔甘冲锋枪',
+  'M1911 Suppressed': 'M1911手枪(消音消焰)',
+  'Sjögren Shotgun': '舍格伦霰弹枪',
+  'M1941 Johnson': 'M1941半自动步枪',
+  'Chauchat': '绍沙轻机枪',
+  'German Naval Dagger': '德国海军匕首',
+  'British Army Jack Knife': '英国海军匕首',
+  'Lever Pipe': '撬管',
+  'K98 Bayonet': 'K98刺刀',
+  'Coupe Coupe': '大砍刀',
+  'Katana': '武士刀',
+  'Cricket Bat': '板球棒',
+  'Solveig\'s Knife': '维京刀',
+  'Control Stick': '控制杆',
+  'Ilse\'s Pickaxe': '伊尔泽的尖嘴镐',
+  'Escape Axe': '逃生斧',
+  'Sai': '釵',
+  'Broken Bottle': '破损的瓶子'
 }
 var VehicleKeyToCNName = {
   'HACHI': '八八式高射炮',
@@ -165,7 +183,13 @@ var VehicleKeyToCNName = {
   'SD. KFZ. 251 PAKWAGEN': 'SD. KFZ. 251 PAKWAGEN战车',
   'KETTENKRAD': '半履带摩托车',
   'TYPE 95 CAR': '九五式小型乘用车',
-  'DINGHY': '小艇'
+  'DINGHY': '小艇',
+  'M8 GREYHOUND': 'M8 灰狗',
+  'P51K Fighter': 'P51K 战斗机',
+  'P-70 Night Fighter': 'P70夜间战斗机',
+  'SdKfz 234 PUMA': 'SdKfz 234 彪马',
+  'P51D Fighter': 'P51D 战斗机',
+  'A-20 Bomber': 'A20 轰炸机'
 }
 var GadgetKeyToCNName = {
   'Ammo Crate': '弹药箱',
@@ -192,7 +216,17 @@ var GadgetKeyToCNName = {
   'Sticky Grenade': '粘性手雷',
   'Throwing Blade': '飞刀',
   'Medical Syringe': '医疗注射器',
-  'Katana': '武士刀'
+  'Lunge Mine': '刺雷',
+  'Kunai': '苦无',
+  'M1A1 Bazooka': 'M1A1 火箭筒',
+  'Doppel-Schuss': '双管信号枪',
+  'Kampfpistole': '战斗信号枪',
+  'RMN50 Rifle Frag': 'RMN50手持迫击炮',
+  'Firecrackers': '爆竹',
+  'Type 99 Mine': '九九式地雷',
+  'Pistol Flamethrower': '手枪火焰喷射器',
+  'Shaped Charge': '锥形装药',
+  'Demolition Grenade': '爆破手雷'
 }
 function timestampToTime (timestamp) {
   var date = new Date(timestamp * 1000)

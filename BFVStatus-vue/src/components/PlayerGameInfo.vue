@@ -1,42 +1,58 @@
 <template>
   <div class="playerGameInfo-wrap">
-    <div class="load" v-if="gameReportsTabPaneLoading">
+    <div class="load"
+         v-if="gameReportsTabPaneLoading">
       <Loading></Loading>
     </div>
-    <el-page-header @back="goBack" content="本局游戏详情" class="pageHeader"></el-page-header>
+    <el-page-header @back="goBack"
+                    content="本局游戏详情"
+                    class="pageHeader"></el-page-header>
     <div v-if="!gameReportsTabPaneLoading && isGetDataSuccessfully">
-      <el-row class="serverInfo-name" type="flex" justify="center">
+      <el-row class="serverInfo-name"
+              type="flex"
+              justify="center">
         <el-col :span="24">{{gameWholeInfo.data.metadata.serverName}}</el-col>
       </el-row>
-      <el-row class="serverInfo-modeAndMap" type="flex" justify="center">
-        <el-col
-          :span="24"
-        >{{gameWholeInfo.data.metadata.modeKey | convertModeName}}&nbsp;&nbsp;-&nbsp;&nbsp;{{gameWholeInfo.data.metadata.mapKey | convertMapName}}</el-col>
+      <el-row class="serverInfo-modeAndMap"
+              type="flex"
+              justify="center">
+        <el-col :span="24">{{gameWholeInfo.data.metadata.modeKey | convertModeName}}&nbsp;&nbsp;-&nbsp;&nbsp;{{gameWholeInfo.data.metadata.mapKey | convertMapName}}</el-col>
       </el-row>
-      <el-row class="serverInfo-timeAndPlayerCount" type="flex" justify="center">
+      <el-row class="serverInfo-timeAndPlayerCount"
+              type="flex"
+              justify="center">
         <el-col :span="24">
           {{gameWholeInfo.data.metadata.timestamp | convertTimestamp}}
           <el-divider direction="vertical"></el-divider>
           {{playerCount}}人
         </el-col>
       </el-row>
-      <el-tabs class="infoTabs" stretch>
-        <el-tab-pane v-for="(child, index) in gameWholeInfo.data.children" :key="index">
+      <el-tabs class="infoTabs"
+               stretch>
+        <el-tab-pane v-for="(child, index) in gameWholeInfo.data.children"
+                     :key="index">
           <span slot="label">{{child.metadata.name | convertCountryName}}</span>
-          <el-table :data="child.children" size="mini" border :row-class-name="tableRowClassName">
-            <el-table-column type="expand" width="40px" fixed="left">
+          <el-table :data="child.children"
+                    size="mini"
+                    border
+                    :row-class-name="tableRowClassName">
+            <el-table-column type="expand"
+                             width="40px"
+                             fixed="left">
               <template slot-scope="props">
                 <!-- <el-button type="text" @click="goToOtherPlayer">点此查看&nbsp;{{props.row.metadata.name}}&nbsp;的详细战绩</el-button> -->
                 <el-divider>游玩时长</el-divider>
-                <el-form label-position="left" size="mini" class="timeForm">
+                <el-form label-position="left"
+                         size="mini"
+                         class="timeForm">
                   <el-form-item label="时长">
-                    <span
-                      style="color: #409EFF"
-                    >{{props.row.metadata.timePlayed | convertSecondToTime}}</span>
+                    <span style="color: #409EFF">{{props.row.metadata.timePlayed | convertSecondToTime}}</span>
                   </el-form-item>
                 </el-form>
                 <el-divider>分数</el-divider>
-                <el-form label-position="left" size="mini" class="scoreForm">
+                <el-form label-position="left"
+                         size="mini"
+                         class="scoreForm">
                   <el-form-item label="总分">
                     <span style="color: #409EFF">{{props.row.stats[24].displayValue}}</span>
                   </el-form-item>
@@ -45,7 +61,9 @@
                   </el-form-item>
                 </el-form>
                 <el-divider>战斗</el-divider>
-                <el-form label-position="left" size="mini" class="combatForm">
+                <el-form label-position="left"
+                         size="mini"
+                         class="combatForm">
                   <el-form-item label="击杀">
                     <span style="color: #409EFF">{{props.row.stats[0].displayValue}}</span>
                   </el-form-item>
@@ -63,21 +81,15 @@
                   </el-form-item>
                   <el-form-item label="爆头数量">
                     <span style="color: #409EFF">{{props.row.stats[5].displayValue}}</span>
-                    <el-tag
-                      type="primary"
-                      size="mini"
-                      v-if="((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100) < 30"
-                    >爆头率{{((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100).toFixed(1)}}%</el-tag>
-                    <el-tag
-                      type="warning"
-                      size="mini"
-                      v-else-if="((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100) >= 30 && ((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100) < 50"
-                    >爆头率{{((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100).toFixed(1)}}%</el-tag>
-                    <el-tag
-                      type="danger"
-                      size="mini"
-                      v-else-if="((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100) >= 50"
-                    >爆头率{{((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100).toFixed(1)}}%</el-tag>
+                    <el-tag type="primary"
+                            size="mini"
+                            v-if="((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100) < 30">爆头率{{((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100).toFixed(1)}}%</el-tag>
+                    <el-tag type="warning"
+                            size="mini"
+                            v-else-if="((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100) >= 30 && ((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100) < 50">爆头率{{((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100).toFixed(1)}}%</el-tag>
+                    <el-tag type="danger"
+                            size="mini"
+                            v-else-if="((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100) >= 50">爆头率{{((props.row.stats[5].displayValue / props.row.stats[0].displayValue) * 100).toFixed(1)}}%</el-tag>
                   </el-form-item>
                   <el-form-item label="助攻击杀">
                     <span style="color: #409EFF">{{props.row.stats[6].displayValue}}</span>
@@ -111,7 +123,9 @@
                   </el-form-item>
                 </el-form>
                 <el-divider>团队</el-divider>
-                <el-form label-positon="left" size="mini" class="teamForm">
+                <el-form label-positon="left"
+                         size="mini"
+                         class="teamForm">
                   <el-form-item label="治疗量">
                     <span style="color: #409EFF">{{props.row.stats[16].displayValue}}</span>
                   </el-form-item>
@@ -138,23 +152,17 @@
                   </el-form-item>
                 </el-form>
                 <el-divider>武器</el-divider>
-                <div
-                  class="weaponInfo-wrap"
-                  v-for="(child, index) in props.row.children"
-                  :key="index"
-                >
-                  <div
-                    v-if="child.metadata.categoryKey !== 'gadget' && child.metadata.categoryKey !== 'tanks' && child.metadata.categoryKey !== 'planes' && child.metadata.categoryKey !== 'transport'"
-                    style="margin-top: 10px"
-                  >
-                    <span
-                      style="font-size: 18px; color: #409EFF"
-                    >{{child.metadata.name | convertWeaponName}}</span>
-                    <el-form label-position="left" class="weaponForm" size="mini">
+                <div class="weaponInfo-wrap"
+                     v-for="(child, index) in props.row.children"
+                     :key="index">
+                  <div v-if="child.metadata.categoryKey !== 'gadget' && child.metadata.categoryKey !== 'tanks' && child.metadata.categoryKey !== 'planes' && child.metadata.categoryKey !== 'transport'"
+                       style="margin-top: 10px">
+                    <span style="font-size: 18px; color: #409EFF">{{child.metadata.name | convertWeaponName}}</span>
+                    <el-form label-position="left"
+                             class="weaponForm"
+                             size="mini">
                       <el-form-item label="使用时长">
-                        <span
-                          style="color: #409EFF"
-                        >{{child.stats[0].displayValue | convertTimeLan}}</span>
+                        <span style="color: #409EFF">{{child.stats[0].displayValue | convertTimeLan}}</span>
                       </el-form-item>
                       <el-form-item label="击杀">
                         <span style="color: #409EFF">{{child.stats[1].displayValue}}</span>
@@ -181,23 +189,17 @@
                   </div>
                 </div>
                 <el-divider>载具</el-divider>
-                <div
-                  class="vehicleInfo-wrap"
-                  v-for="(child, index) in props.row.children"
-                  :key="index"
-                >
-                  <div
-                    v-if="child.metadata.categoryKey === 'tanks' || child.metadata.categoryKey === 'planes' || child.metadata.categoryKey === 'transport'"
-                    style="margin-top: 10px"
-                  >
-                    <span
-                      style="font-size: 18px; color: #409EFF"
-                    >{{child.metadata.name | convertVehicleName}}</span>
-                    <el-form class="vehicleForm" label-position="left" size="mini">
+                <div class="vehicleInfo-wrap"
+                     v-for="(child, index) in props.row.children"
+                     :key="index">
+                  <div v-if="child.metadata.categoryKey === 'tanks' || child.metadata.categoryKey === 'planes' || child.metadata.categoryKey === 'transport'"
+                       style="margin-top: 10px">
+                    <span style="font-size: 18px; color: #409EFF">{{child.metadata.name | convertVehicleName}}</span>
+                    <el-form class="vehicleForm"
+                             label-position="left"
+                             size="mini">
                       <el-form-item label="使用时长">
-                        <span
-                          style="color: #409EFF"
-                        >{{child.stats[0].displayValue | convertTimeLan}}</span>
+                        <span style="color: #409EFF">{{child.stats[0].displayValue | convertTimeLan}}</span>
                       </el-form-item>
                       <el-form-item label="击杀">
                         <span style="color: #409EFF">{{child.stats[1].displayValue}}</span>
@@ -209,20 +211,17 @@
                   </div>
                 </div>
                 <el-divider>装备</el-divider>
-                <div
-                  class="gadgetInfo-wrap"
-                  v-for="(child, index) in props.row.children"
-                  :key="index"
-                >
-                  <div v-if="child.metadata.categoryKey === 'gadget'" style="margin-top: 10px">
-                    <span
-                      style="font-size: 18px; color: #409EFF"
-                    >{{child.metadata.name | convertGadgetName}}</span>
-                    <el-form label-position="left" class="gadgetForm" size="mini">
+                <div class="gadgetInfo-wrap"
+                     v-for="(child, index) in props.row.children"
+                     :key="index">
+                  <div v-if="child.metadata.categoryKey === 'gadget'"
+                       style="margin-top: 10px">
+                    <span style="font-size: 18px; color: #409EFF">{{child.metadata.name | convertGadgetName}}</span>
+                    <el-form label-position="left"
+                             class="gadgetForm"
+                             size="mini">
                       <el-form-item label="使用时长">
-                        <span
-                          style="color: #409EFF"
-                        >{{child.stats[0].displayValue | convertTimeLan}}</span>
+                        <span style="color: #409EFF">{{child.stats[0].displayValue | convertTimeLan}}</span>
                       </el-form-item>
                       <el-form-item label="击杀">
                         <span style="color: #409EFF">{{child.stats[1].displayValue}}</span>
@@ -235,27 +234,32 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column label="名称" width="120px">
+            <el-table-column label="名称"
+                             width="120px">
               <template slot-scope="scope">
                 <span>{{scope.row.metadata.name}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="分数" width="75px">
+            <el-table-column label="分数"
+                             width="75px">
               <template slot-scope="scope">
                 <span>{{scope.row.stats[24].displayValue}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="K/D" width="65px">
+            <el-table-column label="K/D"
+                             width="65px">
               <template slot-scope="scope">
                 <span>{{scope.row.stats[2].displayValue}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="杀敌" width="55px">
+            <el-table-column label="杀敌"
+                             width="55px">
               <template slot-scope="scope">
                 <span>{{scope.row.stats[0].displayValue}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="死亡" width="55px">
+            <el-table-column label="死亡"
+                             width="55px">
               <template slot-scope="scope">
                 <span>{{scope.row.stats[1].displayValue}}</span>
               </template>
@@ -268,7 +272,7 @@
 </template>
 
 <script>
-import {timestampToTime, mapCodeToCN, modeNameToCN, countryNameConvert, timeENGToCN, weaponNameConvert, vehicleNameConvert, gadgetNameConvert, secondsFormat} from '../js/convertPackage.js'
+import { timestampToTime, mapCodeToCN, modeNameToCN, countryNameConvert, timeENGToCN, weaponNameConvert, vehicleNameConvert, gadgetNameConvert, secondsFormat } from '../js/convertPackage.js'
 import { httpGet } from '../js/api'
 export default {
   name: 'PlayerGameInfo',
@@ -326,10 +330,7 @@ export default {
         this.playerCount += this.gameWholeInfo.data.children[i].children.length
       }
     },
-    goToOtherPlayer () {
-      // TODO
-    },
-    tableRowClassName ({row, rowIndex}) {
+    tableRowClassName ({ row, rowIndex }) {
       if (row.metadata.name === this.playerId) {
         console.log('res:' + (row.metadata.name === this.playerId))
         return 'success-row'

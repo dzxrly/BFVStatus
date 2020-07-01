@@ -99,7 +99,9 @@
       <van-tabs @click="eltabClick"
                 v-loading="tabLoading"
                 stretch
-                v-model="vanTabActive">
+                v-model="vanTabActive"
+                swipeable
+                animated>
         <van-tab title="战绩概览">
           <div class="statusOverview-Wrap">
             <div class="overviewData">
@@ -261,9 +263,9 @@
                     v-loading="gameReportsTabPaneLoading"
                     size="mini"
                     border
+                    stripe
                     v-el-table-infinite-scroll="load"
-                    max-height="100%"
-                    stripe>
+                    max-height="auto">
             <el-table-column label="操作"
                              width="55px">
               <template slot-scope="scope">
@@ -272,31 +274,23 @@
                            @click="handleClick(scope.row)">详情</el-button>
               </template>
             </el-table-column>
-            <el-table-column label="服务器信息"
-                             width="200">
+            <el-table-column label="服务器信息">
               <template slot-scope="scope">
-                <div>
-                  <el-row type="flex"
-                          justify="center">
-                    <el-col :span="24">
-                      <el-tag type="success"
-                              size="mini">{{scope.row.modeKey | convertModeName}}</el-tag>
-                      <span style="font-weight: bold;">{{scope.row.mapKey | convertMapName}}</span>
-                    </el-col>
-                  </el-row>
-                  <el-row type="flex"
-                          justify="center">
-                    <el-col :span="24">
-                      <span>{{scope.row.serverName}}</span>
-                    </el-col>
-                  </el-row>
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column label="时间"
-                             width="180px">
-              <template slot-scope="scope">
-                <span>{{scope.row.timestamp | convertTimestamp}}</span>
+                <el-row type="flex"
+                        justify="center">
+                  <el-col :span="24">
+                    <el-tag type="success"
+                            size="mini">{{scope.row.modeKey | convertModeName}}</el-tag>
+                    <span style="font-weight: bold;">{{scope.row.mapKey | convertMapName}}</span>
+                    <span style="font-weight: nomarl;">&nbsp;&nbsp;{{scope.row.timestamp | convertTimestamp}}</span>
+                  </el-col>
+                </el-row>
+                <el-row type="flex"
+                        justify="center">
+                  <el-col :span="24">
+                    <span style="color: #909399;">{{scope.row.serverName}}</span>
+                  </el-col>
+                </el-row>
               </template>
             </el-table-column>
           </el-table>
@@ -804,12 +798,6 @@ export default {
     },
     eltabClick (name, title) {
       this.setTabActive(name)
-      if (name === 2) {
-        this.banRefresh = true
-        this.getAndSetGameReports()
-      } else {
-        this.banRefresh = false
-      }
     },
     weaponTimeSort (obj1, obj2) {
       var val1 = obj1.stats[2].value
@@ -1032,11 +1020,6 @@ export default {
       }
     }
   }
-  // .vehicleInfoForm {
-  // .el-form-item {
-  // margin 0 0 0 0
-  // }
-  // }
   .inIsHackerPopup {
     margin 10px 10px 10px 10px
     .el-divier {

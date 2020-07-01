@@ -20,15 +20,17 @@
             <el-form ref="form"
                      :model="formInfo"
                      :rules="rules"
-                     class="form"
-                     label-position="top"
+                     class="inputForm"
+                     label-position="right"
+                     label-width="60px"
                      size="mini">
               <el-form-item label="平台"
                             prop="userPlatform">
                 <el-select v-model="formInfo.userPlatform"
                            placeholder="请选择平台"
                            filterable
-                           clearable>
+                           clearable
+                           style="width: 100%;">
                   <el-option v-for="item in options"
                              :key="item.value"
                              :label="item.label"
@@ -40,12 +42,15 @@
                 <el-autocomplete v-model.trim="formInfo.userName"
                                  :fetch-suggestions="querySearch"
                                  placeholder="请输入用户名"
-                                 clearable></el-autocomplete>
+                                 clearable
+                                 style="width: 100%;"></el-autocomplete>
               </el-form-item>
               <el-form-item>
-                <el-row>
-                  <el-col :span="10">
+                <el-row type="flex"
+                        justify="end">
+                  <el-col :span="8">
                     <el-button type="primary"
+                               style="width: 100%; text-align: center;"
                                @click="submit('form')"
                                plain>查询</el-button>
                   </el-col>
@@ -175,7 +180,7 @@ export default {
     return {
       versionCheckLoading: true,
       isLatestVer: 1,
-      tagName: 'Ver.1.4.3',
+      tagName: 'Ver.1.5.1',
       isTestVer: false,
       githubReleaseUrl: 'https://api.github.com/repos/dzxrly/BFVStatus/releases/latest',
       githubLink: 'https://github.com/dzxrly/BFVStatus',
@@ -217,15 +222,14 @@ export default {
     this.checkNeedToUpdate()
     this.getPlayerIdHistory()
     this.checkIsTestVersion()
-    // this.getStoredVer()
+    this.tabAcitveInit()
   },
   methods: {
-    getStoredVer () {
-      console.log(this.$store.getters.getVersionCheckedRes + '__' + this.$store.getters.getVersionCheckedDate)
+    tabAcitveInit () {
+      this.$store.commit('setTabActive', 0)
     },
     getLastCheckVerRes () {
       this.isLatestVer = this.$store.getters.getVersionCheckedRes
-      console.log(this.$store.getters.getVersionCheckedRes)
     },
     checkIsTestVersion () {
       if (this.tagName.indexOf('alpha') !== -1 || this.tagName.indexOf('beta') !== -1) {
@@ -355,7 +359,6 @@ export default {
   .container-wrap {
     min-height 95vh
     .formCol {
-
       .inCol {
         background-color #ffffff
         margin-top 70%
@@ -368,6 +371,9 @@ export default {
         .appName {
           margin 5px 5px 15px 5px
           text-align center
+        }
+        .inputForm {
+          margin 10px 5px 5px 5px
         }
       }
     }

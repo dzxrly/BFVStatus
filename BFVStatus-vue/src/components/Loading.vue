@@ -2,9 +2,6 @@
   <div class="load-ani">
     <svg height="91"
          width="65">
-      <!-- <polyline class="load-logoBG" fill="none" :stroke="logoColorBG" stroke-width="2"
-            points="1,1 21,1 33,44 44,1 64,1 33,90 1,1"
-      stroke-linecap="round" stroke-linejoin="round"></polyline>-->
       <polyline class="load-logo"
                 fill="none"
                 :stroke="logoColor"
