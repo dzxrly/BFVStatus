@@ -49,9 +49,12 @@ var ModelKeyToCNName = {
 }
 var CountryKeyToCNName = {
   'Germany': '德国',
+  'GER': '德国',
   'United Kingdom': '英国',
   'United States': '美国',
-  'Japan': '日本'
+  'USA_Pacific': '美国',
+  'Japan': '日本',
+  'JPN': '日本'
 }
 var WeaponKeyToCNName = {
   'Boys AT Rifle': '博伊斯反坦克步枪',

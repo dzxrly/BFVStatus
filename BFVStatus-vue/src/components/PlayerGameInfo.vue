@@ -31,7 +31,9 @@
                stretch>
         <el-tab-pane v-for="(child, index) in gameWholeInfo.data.children"
                      :key="index">
-          <span slot="label">{{child.metadata.name | convertCountryName}}</span>
+          <span slot="label">{{child.metadata.name | convertCountryName}}&nbsp;&nbsp;<el-tag v-if="child.metadata.isWinner"
+                    size="mini"
+                    type="success">获胜方</el-tag></span>
           <el-table :data="child.children"
                     size="mini"
                     border
